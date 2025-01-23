@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 
 public class SwerveModule extends SubsystemBase {
@@ -40,6 +41,8 @@ public class SwerveModule extends SubsystemBase {
   private int turningMotorId;
   private int absoluteEncoderId;
 
+  private PIDController turningPidController;
+
   private SparkMaxConfig config;
 
   public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
@@ -57,6 +60,7 @@ public class SwerveModule extends SubsystemBase {
 
       driveEncoder = driveMotor.getEncoder();
       turningEncoder = turningMotor.getEncoder();
+      
 
       config
         .inverted(driveMotorReversed)
@@ -78,6 +82,11 @@ public class SwerveModule extends SubsystemBase {
         .pid(ModuleConstants.kPTurning, 0, 0);
       turningMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
       
+      turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
+      turningPidController.enableContinuousInput(-Math.PI, Math.PI);
+      
+
+      resetEncoders();
       }
 
       //gets drive encoder position in meters
@@ -143,6 +152,25 @@ public class SwerveModule extends SubsystemBase {
         return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getTurningPosition()));    
     }
     
+    public void setDesiredState(SwerveModuleState state){
+        //does not set a state if there is no speed in the new state
+        //need to test to see if this makes it so it can coast
+        if(Math.abs(state.speedMetersPerSecond)<0.001){
+            stop();
+            return;
+        }
+        //optimize makes it so that the wheel only has to turn a max of 90 degrees at a time
+        //uses both directions of drive motor instead of just forward
+        state.optimize( getState().angle);
+        //sets the driveMotor speed and scale down using physical max meters per second of the motor
+        driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        //sets the turningMotor position useing a pid controller with inputs of the current position of turning motor
+        //combined with the desired position
+        turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
+        // ???
+        SmartDashboard.putString("Swerve[" + turningMotorId+"] state", state.toString());
+
+    }
     
     //stop
     public void stop(){
