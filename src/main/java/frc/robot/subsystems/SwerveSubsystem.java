@@ -83,7 +83,8 @@ public class SwerveSubsystem extends SubsystemBase {
     //that way it always reads from 0 to 360
     //or 0 to -360
     public double getHeading() {
-        return -Math.IEEEremainder(gyro.getAngle(), 360);
+        //this being negative screws with the gyro. - J
+        return Math.IEEEremainder(gyro.getAngle(), 360);
     }
     //returns as radians?
     public Rotation2d getRotation2d() {
@@ -125,10 +126,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
 public void setModuleStates(SwerveModuleState[] desiredStates) {
   SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-  frontLeft.setDesiredState(desiredStates[0]);
+  //frontLeft.setDesiredState(desiredStates[0]);
+  //frontRight.setDesiredState(desiredStates[1]);
+  //backLeft.setDesiredState(desiredStates[2]);
+  //backRight.setDesiredState(desiredStates[3]);
+  frontLeft.setDesiredState(desiredStates[3]);
   frontRight.setDesiredState(desiredStates[1]);
   backLeft.setDesiredState(desiredStates[2]);
-  backRight.setDesiredState(desiredStates[3]);
+  backRight.setDesiredState(desiredStates[0]);
+
 }
 
 }

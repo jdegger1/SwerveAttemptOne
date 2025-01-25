@@ -53,6 +53,7 @@ public class SwerveModule extends SubsystemBase {
 
       this.absoluteEncoder = new CANcoder(absoluteEncoderId);
 
+
       driveMotor = new SparkMax(driveMotorId, MotorType.kBrushless);
       turningMotor = new SparkMax(turningMotorId, MotorType.kBrushless);
       this.turningMotorId = turningMotorId;
@@ -60,7 +61,7 @@ public class SwerveModule extends SubsystemBase {
 
       driveEncoder = driveMotor.getEncoder();
       turningEncoder = turningMotor.getEncoder();
-      
+      //resetEncoders();
 
       config
         .inverted(driveMotorReversed)
@@ -85,8 +86,8 @@ public class SwerveModule extends SubsystemBase {
       turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
       turningPidController.enableContinuousInput(-Math.PI, Math.PI);
       
-
       resetEncoders();
+      
       }
 
       //gets drive encoder position in meters
@@ -95,7 +96,7 @@ public class SwerveModule extends SubsystemBase {
     }
     //gets turning encoder position in radians
     public double getTurningPosition(){
-        return turningEncoder.getPosition();
+        return getAbsoluteEncoderRad();
     }
     //gets that swerve module position idk
     public SwerveModulePosition getPosition(){

@@ -38,6 +38,8 @@ public final class Constants {
     public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter/60;
     public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad/60;
     //wtf this do
+    
+    //its our p term for the pid for turning - J
     public static final double kPTurning = 0.3;
     
   }
@@ -79,7 +81,7 @@ public final class Constants {
     //Try messing with these reversed/not reversed values some more
     //look at what the shuffleboard values are vs what you want them to be
     public static final boolean kFrontLeftTurningEncoderReversed = false;
-    public static final boolean kBackLeftTurningEncoderReversed = false; //turning wierd why 
+    public static final boolean kBackLeftTurningEncoderReversed = false; 
     public static final boolean kFrontRightTurningEncoderReversed = false;
     public static final boolean kBackRightTurningEncoderReversed = false;
 
@@ -157,7 +159,7 @@ public final class Constants {
 
     
 
-    public static final double kDeadband = 0.1;
+    public static final double kDeadband = 0.15;
 }
   
 }
