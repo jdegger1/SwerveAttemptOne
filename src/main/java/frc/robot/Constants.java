@@ -43,6 +43,22 @@ public final class Constants {
     public static final double kPTurning = 0.3;
     
   }
+  public static class LadderConstants {
+    public static final int kLiftMotorPort = 0;
+
+    //We need to test different values
+    public static double kLiftPVal = 0;
+    public static double kLiftIVal = 0;
+    public static double kLiftDVal = 0;
+
+    //We need to find the points on the ladder for the encoder
+    public static double kLiftHighSetPoint = 0;
+    public static double kLiftMidSetPoint = 0;
+    public static double kLiftLowSetPoint = 0;
+    public static double kLiftTroughSetPoint = 0;
+    public static double kLiftRecieveSetPoint = 0;
+
+  }
 
   public static class DriveConstants{
     // Distance between right and left wheels
@@ -119,28 +135,39 @@ public final class Constants {
 
     ///////////////////////buttons\\\\\\\\\\\\\\\\\
     //////////////////////////Controller One\\\\\\\\\\\\\\\\\\\\\
-    public static final int kDriverFieldOrientedButtonIdx =1;
+    //RB
+    public static final int kDriverFieldOrientedButtonIdx =6;
+
     //x
-    public static final int kDriverResetArmButton = 2;
+    public static final int kLiftLowButton = 2;
+    
     //B
-    public static final int kRestGyrobutton = 3;
+    public static final int kLiftMidButton = 3;
+    
     //Y
-    public static final int kShootSequenceButton = 4;
-    //right Trigger
-    public static final int kExtendLiftButton = 6;
-   //left trigger
-    public static final int kRetractLiftButton = 5;
+    public static final int kLiftHighButton = 4;
+
+    //A
+    public static final int kliftTroughButton = 1;
+    
+    //LB
+    public static final int kLiftRecieveButton = 5;
     /////////////////////////////////Controller Two\\\\\\\\\\\\\\
     //Y
     public static final int kFlyWheelFwdButton = 4;
+    
     //A
     public static final int kFlyWheelBwdButton = 1;
+    
     //right trigger
     public static final int kArmForwardButton = 5;
+    
     //left trigger
     public static final int kArmBackwardButton = 6;
+    
     //B
     public static final int kHerderInButton = 3;
+    
     //X
     public static final int kHerderOutButton = 2;
 

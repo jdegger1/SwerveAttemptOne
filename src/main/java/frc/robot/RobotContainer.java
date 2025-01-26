@@ -4,12 +4,19 @@
 
 package frc.robot;
 
+import frc.robot.Constants.LadderConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.LadderHigh;
+import frc.robot.commands.LadderLow;
+import frc.robot.commands.LadderMid;
+import frc.robot.commands.LadderRecieve;
+import frc.robot.commands.LadderTrough;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.LadderSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -27,9 +34,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final LadderSubsystem ladderSubsystem = new LadderSubsystem();
   private final SendableChooser<String> m_chooser;
 
   private final Joystick driverJoystickOne = new Joystick(OIConstants.kDriverControllerOnePort);
+  private final Joystick driverJoystickTwo = new Joystick(OIConstants.kDriverControllerTwoPort);
 
 
 
@@ -49,9 +58,11 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-     //resets the gyro mid drive
-    
-   
+    new JoystickButton(driverJoystickOne, OIConstants.kLiftHighButton).whileTrue(new LadderHigh(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
+    new JoystickButton(driverJoystickOne, OIConstants.kLiftMidButton).whileTrue(new LadderMid(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
+    new JoystickButton(driverJoystickOne, OIConstants.kLiftLowButton).whileTrue(new LadderLow(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
+    new JoystickButton(driverJoystickOne, OIConstants.kliftTroughButton).whileTrue(new LadderTrough(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
+    new JoystickButton(driverJoystickOne, OIConstants.kLiftRecieveButton).whileTrue(new LadderRecieve(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
   }
 
   /**
