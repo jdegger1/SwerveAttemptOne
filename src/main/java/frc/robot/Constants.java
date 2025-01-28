@@ -47,7 +47,7 @@ public final class Constants {
     public static final int kLiftMotorPort = 0;
 
     //We need to test different values
-    public static double kLiftPVal = 0;
+    public static double kLiftPVal = 0.1;
     public static double kLiftIVal = 0;
     public static double kLiftDVal = 0;
 
