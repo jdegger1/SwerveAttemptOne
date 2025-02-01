@@ -12,6 +12,7 @@ import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.LadderHigh;
 import frc.robot.commands.LadderLow;
 import frc.robot.commands.LadderMid;
+import frc.robot.commands.LadderMove;
 import frc.robot.commands.LadderRecieve;
 import frc.robot.commands.LadderTrough;
 import frc.robot.commands.SwerveJoystickCmd;
@@ -58,11 +59,21 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
+    /*
     new JoystickButton(driverJoystickOne, OIConstants.kLiftHighButton).whileTrue(new LadderHigh(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
     new JoystickButton(driverJoystickOne, OIConstants.kLiftMidButton).whileTrue(new LadderMid(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
     new JoystickButton(driverJoystickOne, OIConstants.kLiftLowButton).whileTrue(new LadderLow(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
     new JoystickButton(driverJoystickOne, OIConstants.kliftTroughButton).whileTrue(new LadderTrough(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
     new JoystickButton(driverJoystickOne, OIConstants.kLiftRecieveButton).whileTrue(new LadderRecieve(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
+    */
+
+    //Ladder is on controller one for testing, will move to controller two for final controls.
+    new JoystickButton(driverJoystickOne, OIConstants.kLiftHighButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
+    new JoystickButton(driverJoystickOne, OIConstants.kLiftMidButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
+    new JoystickButton(driverJoystickOne, OIConstants.kLiftLowButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
+    new JoystickButton(driverJoystickOne, OIConstants.kliftTroughButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
+    new JoystickButton(driverJoystickOne, OIConstants.kLiftRecieveButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
+    
   }
 
   /**

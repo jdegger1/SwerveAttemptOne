@@ -18,6 +18,9 @@ public class LadderSubsystem extends SubsystemBase {
   //coded as brushless can code as brushed if neccesary.
   private final SparkMax liftMotor = new SparkMax(LadderConstants.kLiftMotorPort, MotorType.kBrushless);
   private final RelativeEncoder liftEncoder = liftMotor.getEncoder();
+  
+  //private final SparkMax liftMotor = new SparkMax(LadderConstants.kLiftMotorPort, MotorType.kBrushed);
+  //private final RelativeEncoder liftEncoder = liftMotor.getAbsoluteEncoder();
   public LadderSubsystem() {}
 
   public void driveLift(double speed){
