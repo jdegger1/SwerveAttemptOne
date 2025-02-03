@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+package frc.robot.commands.oldLadderCommands;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -10,19 +10,19 @@ import frc.robot.Constants.LadderConstants;
 import frc.robot.subsystems.LadderSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class LadderLow extends Command {
-  /** Creates a new LadderLow. */
+public class LadderHigh extends Command {
+  /** Creates a new LadderUp. */
   private final LadderSubsystem ladderSub;
   private final PIDController m_PidController;
 
   private double limiter;
 
-  public LadderLow(LadderSubsystem ladderSub, double limiter) {
+  public LadderHigh(LadderSubsystem ladderSub, double limiter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.limiter = limiter;
 
     this.m_PidController = new PIDController(LadderConstants.kLiftPVal, LadderConstants.kLiftIVal, LadderConstants.kLiftDVal);
-    m_PidController.setSetpoint(LadderConstants.kLiftLowSetPoint);
+    m_PidController.setSetpoint(LadderConstants.kLiftHighSetPoint);
 
     this.ladderSub = ladderSub;
     

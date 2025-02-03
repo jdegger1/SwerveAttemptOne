@@ -44,19 +44,25 @@ public final class Constants {
     
   }
   public static class LadderConstants {
-    public static final int kLiftMotorPort = 0;
+    public static final int kLiftMotorPort = 51;
 
     //We need to test different values
-    public static double kLiftPVal = 0.1;
-    public static double kLiftIVal = 0;
+    public static double kLiftPVal = 0.05;
+    public static double kLiftIVal = 0.01;
     public static double kLiftDVal = 0;
 
     //We need to find the points on the ladder for the encoder
-    public static double kLiftHighSetPoint = 0;
-    public static double kLiftMidSetPoint = 0;
+    public static double kLiftHighSetPoint = -7;
+    public static double kLiftMidSetPoint = -5;
     public static double kLiftLowSetPoint = 0;
     public static double kLiftTroughSetPoint = 0;
     public static double kLiftRecieveSetPoint = 0;
+
+    public static double kLadderBottom = 0;
+    public static double kLadderTop = -13;
+
+    public static double kLiftSpeedUp = 0.25;
+    public static double kliftSpeedDown = -0.25;
 
   }
 
@@ -135,14 +141,12 @@ public final class Constants {
 
     ///////////////////////buttons\\\\\\\\\\\\\\\\\
     //////////////////////////Controller One\\\\\\\\\\\\\\\\\\\\\
-    //RB
-    public static final int kDriverFieldOrientedButtonIdx =6;
 
     //x
-    public static final int kLiftLowButton = 2;
+    public static final int kLiftLowButton = 3;
     
     //B
-    public static final int kLiftMidButton = 3;
+    public static final int kLiftMidButton = 2;
     
     //Y
     public static final int kLiftHighButton = 4;
@@ -152,40 +156,20 @@ public final class Constants {
     
     //LB
     public static final int kLiftRecieveButton = 5;
+
+    //RB
+    public static final int kLiftResetEncoderButton = 6;
     /////////////////////////////////Controller Two\\\\\\\\\\\\\\
-    //Y
-    public static final int kFlyWheelFwdButton = 4;
     
+    //RB
+    public static final int kDriverFieldOrientedButtonIdx = 6;
+
     //A
-    public static final int kFlyWheelBwdButton = 1;
-    
-    //right trigger
-    public static final int kArmForwardButton = 5;
-    
-    //left trigger
-    public static final int kArmBackwardButton = 6;
-    
+    public static final int kliftSpeedUpButton = 1;
+
     //B
-    public static final int kHerderInButton = 3;
+    public static final int kliftSpeedDownButton = 2;
     
-    //X
-    public static final int kHerderOutButton = 2;
-
-    //Plus up (POV button in degrees)
-    public static final int kArmHerdButton = 0;
-    //Plus Down
-    public static final int kArmCloseSpeakerButton = 180;
-    //plus right
-    public static final int kArmAmpButton = 90;
-    //plus left
-    public static final int kArmFarSpeakerButton = 270;
-    
-    
-    
-
-
-    
-
     public static final double kDeadband = 0.15;
 }
   

@@ -16,12 +16,15 @@ public class LadderSubsystem extends SubsystemBase {
   /** Creates a new LadderSubsystem. */
 
   //coded as brushless can code as brushed if neccesary.
-  private final SparkMax liftMotor = new SparkMax(LadderConstants.kLiftMotorPort, MotorType.kBrushless);
-  private final RelativeEncoder liftEncoder = liftMotor.getEncoder();
+  //private final SparkMax liftMotor = new SparkMax(LadderConstants.kLiftMotorPort, MotorType.kBrushless);
+  //private final RelativeEncoder liftEncoder = liftMotor.getEncoder();
   
-  //private final SparkMax liftMotor = new SparkMax(LadderConstants.kLiftMotorPort, MotorType.kBrushed);
-  //private final RelativeEncoder liftEncoder = liftMotor.getAbsoluteEncoder();
-  public LadderSubsystem() {}
+  private final SparkMax liftMotor;
+  private final RelativeEncoder liftEncoder;
+  public LadderSubsystem() {
+    liftMotor = new SparkMax(LadderConstants.kLiftMotorPort, MotorType.kBrushed);
+    liftEncoder = liftMotor.getEncoder();
+  }
 
   public void driveLift(double speed){
     liftMotor.set(speed);
@@ -33,6 +36,9 @@ public class LadderSubsystem extends SubsystemBase {
     liftEncoder.setPosition(val);
   }
 
+  public void resetEncoder(){
+    setLiftEncoder(0);
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

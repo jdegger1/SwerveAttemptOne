@@ -4,30 +4,19 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.LadderConstants;
 import frc.robot.subsystems.LadderSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class LadderHigh extends Command {
+public class LadderShift extends Command {
+  private LadderSubsystem ladderSub;
+  private double speed;
   /** Creates a new LadderUp. */
-  private final LadderSubsystem ladderSub;
-  private final PIDController m_PidController;
-
-  private double limiter;
-
-  public LadderHigh(LadderSubsystem ladderSub, double limiter) {
+  public LadderShift(LadderSubsystem ladderSub, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.limiter = limiter;
-
-    this.m_PidController = new PIDController(LadderConstants.kLiftPVal, LadderConstants.kLiftIVal, LadderConstants.kLiftDVal);
-    m_PidController.setSetpoint(LadderConstants.kLiftHighSetPoint);
-
     this.ladderSub = ladderSub;
-    
-    addRequirements(ladderSub);
-
   }
 
   // Called when the command is initially scheduled.
@@ -37,21 +26,19 @@ public class LadderHigh extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed = m_PidController.calculate(ladderSub.getLiftEncoder());
-
     ladderSub.driveLift(speed);
+    SmartDashboard.putNumber("ManualSpeed", speed);
+    
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    ladderSub.driveLift(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (ladderSub.getLiftEncoder()> limiter)
+    if(ladderSub.getLiftEncoder() > LadderConstants.kLadderBottom || ladderSub.getLiftEncoder() < LadderConstants.kLadderTop)
       return true;
     return false;
   }
