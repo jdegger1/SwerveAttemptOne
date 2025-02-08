@@ -17,9 +17,6 @@ import edu.wpi.first.math.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-  public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-  }
 
   public static class ModuleConstants {
     public static double kWheelDiameterMeters = Units.inchesToMeters(4);
@@ -74,7 +71,7 @@ public final class Constants {
     / Reef ID: 6 - 11, 17-22 .17 m
     / Barge ID: 4, 5, 14, 15 1.78 m
     */
-    private static double[] aprilTagHeight = {
+    private static double[] kAprilTagHeight = {
       0, 
       1.35, //1 
       1.35, //2
