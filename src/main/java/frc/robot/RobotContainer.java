@@ -18,6 +18,7 @@ import frc.robot.commands.oldLadderCommands.LadderLow;
 import frc.robot.commands.oldLadderCommands.LadderMid;
 import frc.robot.commands.oldLadderCommands.LadderRecieve;
 import frc.robot.commands.oldLadderCommands.LadderTrough;
+import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.LadderSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -38,6 +39,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final LadderSubsystem ladderSubsystem = new LadderSubsystem();
+  private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
   private final SendableChooser<String> m_chooser;
 
   private final Joystick driverJoystickOne = new Joystick(OIConstants.kDriverControllerOnePort);
