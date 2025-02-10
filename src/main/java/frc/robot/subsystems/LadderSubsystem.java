@@ -21,9 +21,11 @@ public class LadderSubsystem extends SubsystemBase {
   
   private final SparkMax liftMotor;
   private final RelativeEncoder liftEncoder;
+  private double lastSetPoint;
   public LadderSubsystem() {
     liftMotor = new SparkMax(LadderConstants.kLiftMotorPort, MotorType.kBrushed);
     liftEncoder = liftMotor.getEncoder();
+    lastSetPoint = 0;
   }
 
   public void driveLift(double speed){
@@ -34,6 +36,11 @@ public class LadderSubsystem extends SubsystemBase {
 
   public void setLiftEncoder(double val){
     liftEncoder.setPosition(val);
+  }
+
+  public double getLastSetPoint(){return lastSetPoint;}
+  public void setLastPoint(double setPoint){
+    lastSetPoint = setPoint;
   }
 
   public void resetEncoder(){

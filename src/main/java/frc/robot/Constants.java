@@ -41,7 +41,7 @@ public final class Constants {
     
   }
   public static class LadderConstants {
-    public static final int kLiftMotorPort = 51;
+    public static final int kLiftMotorPort = 50;
 
     //We need to test different values
     public static double kLiftPVal = 0.05;
@@ -56,9 +56,9 @@ public final class Constants {
     public static double kLiftRecieveSetPoint = 0;
 
     public static double kLadderBottom = 0;
-    public static double kLadderTop = -13;
+    public static double kLadderTop = -13.5;
 
-    public static double kLiftSpeedUp = 0.25;
+    public static double kLiftSpeedUp = 0.5;
     public static double kliftSpeedDown = -0.25;
 
   }

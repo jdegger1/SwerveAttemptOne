@@ -37,6 +37,7 @@ public class LadderMove extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    ladderSub.setLastPoint(setPoint);
     double speed = m_PidController.calculate(ladderSub.getLiftEncoder());
 
     ladderSub.driveLift(speed);

@@ -57,6 +57,8 @@ public class RobotContainer {
               () -> driverJoystickOne.getRawAxis(OIConstants.kDriverRotAxisXbox),
               () -> !driverJoystickTwo.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
     
+    //ladderSubsystem.setDefaultCommand(new LadderMove(ladderSubsystem, ladderSubsystem.getLastSetPoint()));
+    
     // Configure the trigger bindings
     configureBindings();
   }

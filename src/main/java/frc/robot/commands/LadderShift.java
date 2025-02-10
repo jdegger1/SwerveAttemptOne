@@ -17,6 +17,7 @@ public class LadderShift extends Command {
   public LadderShift(LadderSubsystem ladderSub, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.ladderSub = ladderSub;
+    this.speed = speed;
   }
 
   // Called when the command is initially scheduled.
@@ -26,14 +27,18 @@ public class LadderShift extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    ladderSub.driveLift(speed);
+    
     SmartDashboard.putNumber("ManualSpeed", speed);
+    ladderSub.setLastPoint(ladderSub.getLiftEncoder());
+    ladderSub.driveLift(speed);
     
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    ladderSub.driveLift(0);
+  }
 
   // Returns true when the command should end.
   @Override
