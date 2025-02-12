@@ -59,7 +59,8 @@ public final class Constants {
     public static double kLadderTop = -13.5;
 
     public static double kLiftSpeedUp = 0.5;
-    public static double kliftSpeedDown = -0.25;
+    public static double kliftSpeedDown = 0.25;
+    public static double kStop = 0;
 
   }
 
@@ -174,6 +175,13 @@ public final class Constants {
     ///////////////////////buttons\\\\\\\\\\\\\\\\\
     //////////////////////////Controller One\\\\\\\\\\\\\\\\\\\\\
 
+    
+
+    //RB
+    public static final int kDriverFieldOrientedButtonIdx = 6;
+
+    
+    /////////////////////////////////Controller Two\\\\\\\\\\\\\\
     //x
     public static final int kLiftLowButton = 3;
     
@@ -191,16 +199,10 @@ public final class Constants {
 
     //RB
     public static final int kLiftResetEncoderButton = 6;
-    /////////////////////////////////Controller Two\\\\\\\\\\\\\\
+
     
-    //RB
-    public static final int kDriverFieldOrientedButtonIdx = 6;
 
-    //A
-    public static final int kliftSpeedUpButton = 1;
-
-    //B
-    public static final int kliftSpeedDownButton = 2;
+    
     
     public static final double kDeadband = 0.15;
 }

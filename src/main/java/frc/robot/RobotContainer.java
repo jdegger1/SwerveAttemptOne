@@ -8,6 +8,7 @@ import frc.robot.Constants.LadderConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.LadderJoystickCmd;
 import frc.robot.commands.LadderMove;
 import frc.robot.commands.LadderShift;
 import frc.robot.commands.ResetLadderEncoder;
@@ -57,7 +58,7 @@ public class RobotContainer {
               () -> driverJoystickOne.getRawAxis(OIConstants.kDriverRotAxisXbox),
               () -> !driverJoystickTwo.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
     
-    //ladderSubsystem.setDefaultCommand(new LadderMove(ladderSubsystem, ladderSubsystem.getLastSetPoint()));
+    ladderSubsystem.setDefaultCommand(new LadderJoystickCmd(ladderSubsystem, () -> driverJoystickTwo.getRawAxis(OIConstants.kDriverYAxis) ));
     
     // Configure the trigger bindings
     configureBindings();
@@ -73,17 +74,18 @@ public class RobotContainer {
     */
 
     //Ladder is on controller one for testing, will move to controller two for final controls.
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftHighButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftMidButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftLowButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
-    new JoystickButton(driverJoystickOne, OIConstants.kliftTroughButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftRecieveButton).whileTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
+    //toggle on true to make the robot stay at a setpoint until another command is given.
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftMidButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
+    new JoystickButton(driverJoystickTwo, OIConstants.kliftTroughButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftRecieveButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
 
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftResetEncoderButton).onTrue(new ResetLadderEncoder(ladderSubsystem));
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftResetEncoderButton).whileTrue(new ResetLadderEncoder(ladderSubsystem));
 
     //these two button move the ladder without a setPoint
-    new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedUpButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kLiftSpeedUp));
-    new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedDownButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kliftSpeedDown));
+    //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedUpButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kLiftSpeedUp));
+    //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedDownButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kliftSpeedDown));
   }
 
   /**
