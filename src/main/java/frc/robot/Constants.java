@@ -25,7 +25,6 @@ public final class Constants {
     public static final double kTurningMotorGearRatio = (1/(150.0/7));
     
     
-    //
     public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
     
     
@@ -48,15 +47,41 @@ public final class Constants {
     public static double kLiftIVal = 0.01;
     public static double kLiftDVal = 0;
 
-    //We need to find the points on the ladder for the encoder
-    public static double kLiftHighSetPoint = -7;
-    public static double kLiftMidSetPoint = -5;
-    public static double kLiftLowSetPoint = 0;
+    //We need to find the points on the ladder for the encoder - J
+    /// L1 .46m
+    /// L2 .81m
+    /// L3 1.21m
+    /// L4 1.83m
+    /// height at encoder 0 - 
+    /// height at max -13.5 - 1.27
+    
+    // converts encoder value to rotations
+    public static double kRotationsPerMeter = -13.5/1.27;
+
+    //height of chassy in meters
+    public static double kHeightOfChassy = 0.1905;
+
+    //total offset combining chassy height and gap between ladder and top of l4
+    public static double kL4Offset = 0.5461;
+    public static double kMidOffset = 0.3429;
+
+    //heights of reef levels in meters
+    public static double kL4Height = 1.83;
+    public static double kL3Height = 1.21;
+    public static double kL2Height = .81;
+    public static double kL1Height = .46;
+
+    //setPoints subtracting an offset from the height and converting into rotations
+    public static double kLiftHighSetPoint = (kL4Height - kL4Offset) * kRotationsPerMeter;
+    public static double kLiftMidSetPoint = (kL3Height - kMidOffset) * kRotationsPerMeter;
+    public static double kLiftLowSetPoint = (kL2Height - kMidOffset) * kRotationsPerMeter;
     public static double kLiftTroughSetPoint = 0;
+
+    //recieve is assumed to be 0
     public static double kLiftRecieveSetPoint = 0;
 
     public static double kLadderBottom = 0;
-    public static double kLadderTop = -13.5;
+    public static double kLadderTop = -13.6;
 
     public static double kLiftSpeedUp = 0.5;
     public static double kliftSpeedDown = 0.25;
@@ -67,13 +92,14 @@ public final class Constants {
   public static class LimelightConstants{
     /*
     /Height in meters
+    /when using april tags for distance, all units should be in meters - J
     / Coral Station ID: 1, 2, 12, 13 1.35 meters
     / Processor ID: 3, 16 1.17 m
     / Reef ID: 6 - 11, 17-22 .17 m
     / Barge ID: 4, 5, 14, 15 1.78 m
     */
     private static double[] kAprilTagHeight = {
-      0, 
+      0, //indexing starts at 0, so we just skip that in the array. - J
       1.35, //1 
       1.35, //2
       1.17, //3

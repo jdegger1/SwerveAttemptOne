@@ -34,6 +34,7 @@ public class CameraSubsystem extends SubsystemBase {
 
 
   //Use trig to determine distance from april tag
+  //Use meters for heightOfCam pretty please.
   public double getDistance(double heightOfCam, double heightOfTag){
     return (heightOfTag - heightOfCam) / Math.tan(y);
   }

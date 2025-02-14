@@ -10,13 +10,13 @@ import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.LadderJoystickCmd;
 import frc.robot.commands.LadderMove;
-import frc.robot.commands.LadderShift;
 import frc.robot.commands.ResetLadderEncoder;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.oldLadderCommands.LadderHigh;
 import frc.robot.commands.oldLadderCommands.LadderLow;
 import frc.robot.commands.oldLadderCommands.LadderMid;
 import frc.robot.commands.oldLadderCommands.LadderRecieve;
+import frc.robot.commands.oldLadderCommands.LadderShift;
 import frc.robot.commands.oldLadderCommands.LadderTrough;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.ExampleSubsystem;
@@ -73,7 +73,7 @@ public class RobotContainer {
     new JoystickButton(driverJoystickOne, OIConstants.kLiftRecieveButton).whileTrue(new LadderRecieve(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
     */
 
-    //Ladder is on controller one for testing, will move to controller two for final controls.
+    //Ladder now on controller two with joystick to manually control height.
     //toggle on true to make the robot stay at a setpoint until another command is given.
     new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
     new JoystickButton(driverJoystickTwo, OIConstants.kLiftMidButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
