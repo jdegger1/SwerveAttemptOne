@@ -123,6 +123,8 @@ public final class Constants {
       .17, //21
       .17, //22
     };
+
+    public static boolean useMegaTag2 = true;
   }
 
   public static class DriveConstants{

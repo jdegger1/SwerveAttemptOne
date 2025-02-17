@@ -13,6 +13,8 @@ import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import com.studica.frc.AHRS;
 
@@ -22,12 +24,14 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.LimelightConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
@@ -73,11 +77,25 @@ public class SwerveSubsystem extends SubsystemBase {
     private final AHRS gyro = new AHRS(AHRS.NavXComType.kMXP_SPI, AHRS.NavXUpdateRate.k50Hz);
     
     // private ADXRS450_Gyro gyro = new ADXRS450_Gyro();
+
+    //throughout, poseEstimator is used for odometry but the odometer is used to get the initial pose I guess, if not I have to use vectors and that confuses me.
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,new Rotation2d(0),
         new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()});
 
+    private final SwerveDrivePoseEstimator m_poseEstimator =
+      new SwerveDrivePoseEstimator(
+          DriveConstants.kDriveKinematics,
+          gyro.getRotation2d(),
+          new SwerveModulePosition[] {
+            frontLeft.getPosition(),
+            frontRight.getPosition(),
+            backLeft.getPosition(),
+            backRight.getPosition()
+          }, odometer.getPoseMeters());
+
     private ChassisSpeeds chassisSpeeds;
     private RobotConfig config;
+
   public SwerveSubsystem() {
     new Thread(() -> {
             try {
@@ -134,7 +152,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //returns Pose with x,y, and theta coordinates of robot
     // changed to a supplier for the sake of the autoBuilder and pathPlanner - J
     public Supplier<Pose2d> getPose(){
-        return () -> odometer.getPoseMeters();
+        return () -> m_poseEstimator.getEstimatedPosition();
     }
 
     //We moved the use of Chassis Speeds from our Swerve Joystick Command to our Swerve Subsytem
@@ -150,19 +168,82 @@ public class SwerveSubsystem extends SubsystemBase {
     //reset the odometer current theta, module positions
     public Consumer<Pose2d> resetOdometry(Supplier<Pose2d> poseFunction){
         Pose2d pose = poseFunction.get();
-        odometer.resetPosition(getRotation2d(), 
+        m_poseEstimator.resetPosition(getRotation2d(), 
         new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()},
          pose);
+        
         return null;
     }
 
+      public void updateOdometry() {
+    m_poseEstimator.update(
+        gyro.getRotation2d(),
+        new SwerveModulePosition[] {
+          frontLeft.getPosition(),
+          frontRight.getPosition(),
+          backLeft.getPosition(),
+          backRight.getPosition()
+        });
+
+
+    boolean doRejectUpdate = false;
+    if(LimelightConstants.useMegaTag2 == false)
+    {
+      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+      
+      if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
+      {
+        if(mt1.rawFiducials[0].ambiguity > .7)
+        {
+          doRejectUpdate = true;
+        }
+        if(mt1.rawFiducials[0].distToCamera > 3)
+        {
+          doRejectUpdate = true;
+        }
+      }
+      if(mt1.tagCount == 0)
+      {
+        doRejectUpdate = true;
+      }
+
+      if(!doRejectUpdate)
+      {
+        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+        m_poseEstimator.addVisionMeasurement(
+            mt1.pose,
+            mt1.timestampSeconds);
+      }
+    }
+    else if (LimelightConstants.useMegaTag2 == true)
+    {
+      LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+      if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      {
+        doRejectUpdate = true;
+      }
+      if(mt2.tagCount == 0)
+      {
+        doRejectUpdate = true;
+      }
+      if(!doRejectUpdate)
+      {
+        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+        m_poseEstimator.addVisionMeasurement(
+            mt2.pose,
+            mt2.timestampSeconds);
+      }
+    }
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
 
      //updates odometer based on new positions which take into account turn encoder and drive encoder along with position on robot
-     odometer.update(getRotation2d(),new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()} );
+     //m_poseEstimator.update(getRotation2d(),new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()} );
+     updateOdometry();
      SmartDashboard.putString("frontLeft", frontLeft.getPosition().toString());
      SmartDashboard.putString("frontRight", frontRight.getPosition().toString());
      SmartDashboard.putString("backLeft", backLeft.getPosition().toString());
