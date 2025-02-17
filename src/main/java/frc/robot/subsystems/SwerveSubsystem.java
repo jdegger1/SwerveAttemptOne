@@ -4,19 +4,29 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -65,7 +75,9 @@ public class SwerveSubsystem extends SubsystemBase {
     // private ADXRS450_Gyro gyro = new ADXRS450_Gyro();
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,new Rotation2d(0),
         new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()});
-    
+
+    private ChassisSpeeds chassisSpeeds;
+    private RobotConfig config;
   public SwerveSubsystem() {
     new Thread(() -> {
             try {
@@ -74,6 +86,35 @@ public class SwerveSubsystem extends SubsystemBase {
             } catch (Exception e) {
             }
         }).start();
+
+
+        //The following is the code to configure the pathplanner auto builder
+        try{
+            config = RobotConfig.fromGUISettings();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+
+        AutoBuilder.configure(
+            this.getPose(), //gets a supplier of pose2d
+            this.resetOdometry(getPose()), //used if the auto needs to reset the pose
+            this.getRobotRelativeSpeeds(), //uses the chassisSpeeds relative to the robot
+            (speeds, feedforwards) -> driveRobotRelative(speeds), //used to command the robot chassis speeds using robot relative speeds
+            new PPHolonomicDriveController(
+                new PIDConstants(AutoConstants.kAutoTranslationP, 0.0, 0.0), 
+                new PIDConstants(AutoConstants.kAutoRotationP, 0.0, 0.0)
+            ),
+            config, 
+            () -> {
+                var alliance = DriverStation.getAlliance();
+                if(alliance.isPresent()){
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            },
+            this
+        );
     }
 
     public void zeroHeading() {
@@ -91,15 +132,30 @@ public class SwerveSubsystem extends SubsystemBase {
         return Rotation2d.fromDegrees(getHeading());
     }
     //returns Pose with x,y, and theta coordinates of robot
-    public Pose2d getPose(){
-        return odometer.getPoseMeters();
+    // changed to a supplier for the sake of the autoBuilder and pathPlanner - J
+    public Supplier<Pose2d> getPose(){
+        return () -> odometer.getPoseMeters();
+    }
+
+    //We moved the use of Chassis Speeds from our Swerve Joystick Command to our Swerve Subsytem
+    //This will be seen in setModuleStates and in driveRobotRelative (Which is just used for auto currently)
+    public void setChassisSpeed( ChassisSpeeds speed){
+        chassisSpeeds = speed;
+    }
+
+    //gets the chassis speeds relative the robot - J
+    public Supplier<ChassisSpeeds> getRobotRelativeSpeeds(){
+        return ()-> ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation2d());
     }
     //reset the odometer current theta, module positions
-    public void resetOdometry(Pose2d pose){
+    public Consumer<Pose2d> resetOdometry(Supplier<Pose2d> poseFunction){
+        Pose2d pose = poseFunction.get();
         odometer.resetPosition(getRotation2d(), 
         new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()},
          pose);
+        return null;
     }
+
 
   @Override
   public void periodic() {
@@ -113,7 +169,7 @@ public class SwerveSubsystem extends SubsystemBase {
      SmartDashboard.putString("backRight", backRight.getPosition().toString());
      SmartDashboard.putString("Robot Heading", getRotation2d().toString());
 
-     SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
+     SmartDashboard.putString("Robot Location", getPose().get().getTranslation().toString());
     
   }
 
@@ -124,8 +180,25 @@ public class SwerveSubsystem extends SubsystemBase {
     backRight.stop();
 }
 
-public void setModuleStates(SwerveModuleState[] desiredStates) {
+public void driveRobotRelative(ChassisSpeeds robotRelativeSpeed){
+    SwerveModuleState[] desiredStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(ChassisSpeeds.fromRobotRelativeSpeeds(robotRelativeSpeed, getRotation2d()));
   SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+
+  //frontLeft.setDesiredState(desiredStates[0]);
+  //frontRight.setDesiredState(desiredStates[1]);
+  //backLeft.setDesiredState(desiredStates[2]);
+  //backRight.setDesiredState(desiredStates[3]);
+  frontLeft.setDesiredState(desiredStates[3]);
+  frontRight.setDesiredState(desiredStates[1]);
+  backLeft.setDesiredState(desiredStates[2]);
+  backRight.setDesiredState(desiredStates[0]);
+}
+
+public void setModuleStates() {
+
+    SwerveModuleState[] desiredStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+  SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+
   //frontLeft.setDesiredState(desiredStates[0]);
   //frontRight.setDesiredState(desiredStates[1]);
   //backLeft.setDesiredState(desiredStates[2]);

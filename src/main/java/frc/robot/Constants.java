@@ -233,5 +233,13 @@ public final class Constants {
     public static final double kDeadband = 0.15;
 }
   
+public static final class AutoConstants{
+  //isn't used yet but it could be - J
+  public static boolean isCompetition = false;
+
+  public static double kAutoTranslationP = 5.0;
+  public static double kAutoRotationP = 5.0;
+
+}
 }
 //https://software-metadata.revrobotics.com/REVLib-2025.json

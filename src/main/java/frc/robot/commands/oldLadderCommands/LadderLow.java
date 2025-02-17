@@ -15,11 +15,8 @@ public class LadderLow extends Command {
   private final LadderSubsystem ladderSub;
   private final PIDController m_PidController;
 
-  private double limiter;
-
-  public LadderLow(LadderSubsystem ladderSub, double limiter) {
+  public LadderLow(LadderSubsystem ladderSub) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.limiter = limiter;
 
     this.m_PidController = new PIDController(LadderConstants.kLiftPVal, LadderConstants.kLiftIVal, LadderConstants.kLiftDVal);
     m_PidController.setSetpoint(LadderConstants.kLiftLowSetPoint);
@@ -51,7 +48,7 @@ public class LadderLow extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (ladderSub.getLiftEncoder()> limiter)
+    if (ladderSub.getLiftEncoder() == LadderConstants.kLiftLowSetPoint)
       return true;
     return false;
   }
