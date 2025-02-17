@@ -11,13 +11,20 @@ import frc.robot.Constants.LadderConstants;
 import frc.robot.subsystems.LadderSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class LadderMove extends Command {
+
+///
+/// The key difference between LadderMoveAuto and LadderMove is the the isFinished method
+/// The LadderMove command won't stop until it gets overriden, this keeps it in place and fights gravity
+/// LadderMoveAuto stops once it reaches its setpoint, this is based on how I believe auto works
+/// In which the auto won't move on until the previous command finishes
+public class LadderMoveAuto extends Command {
   private final LadderSubsystem ladderSub;
   private final PIDController m_PidController;
 
+
   private final double setPoint;
 
-  public LadderMove(LadderSubsystem ladderSub, double setPoint) {
+  public LadderMoveAuto(LadderSubsystem ladderSub, double setPoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.setPoint = setPoint;
     this.m_PidController = new PIDController(LadderConstants.kLiftPVal, LadderConstants.kLiftIVal, LadderConstants.kLiftDVal);
@@ -54,6 +61,8 @@ public class LadderMove extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    if(ladderSub.getLiftEncoder() == setPoint)
+      return true;
     return false;
   }
 }

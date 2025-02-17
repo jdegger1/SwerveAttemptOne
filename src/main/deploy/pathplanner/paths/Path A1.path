@@ -16,16 +16,16 @@
     },
     {
       "anchor": {
-        "x": 5.289041095890411,
-        "y": 5.354773116438356
+        "x": 5.003553082191781,
+        "y": 5.249593321917807
       },
       "prevControl": {
-        "x": 6.591565432988518,
-        "y": 6.522946859611907
+        "x": 6.306077419289887,
+        "y": 6.4177670650913585
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "ScorePositionA"
+      "linkedName": "ScorePositionA1"
     }
   ],
   "rotationTargets": [],
@@ -48,7 +48,7 @@
   "folder": "Starting Point A",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

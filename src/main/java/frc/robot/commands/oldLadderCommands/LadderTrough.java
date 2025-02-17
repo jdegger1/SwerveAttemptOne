@@ -15,11 +15,9 @@ public class LadderTrough extends Command {
   private final LadderSubsystem ladderSub;
   private final PIDController m_PidController;
 
-  private double limiter;
 
-  public LadderTrough(LadderSubsystem ladderSub, double limiter) {
+  public LadderTrough(LadderSubsystem ladderSub) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.limiter = limiter;
 
     this.m_PidController = new PIDController(LadderConstants.kLiftPVal, LadderConstants.kLiftIVal, LadderConstants.kLiftDVal);
     m_PidController.setSetpoint(LadderConstants.kLiftTroughSetPoint);
@@ -51,7 +49,7 @@ public class LadderTrough extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (ladderSub.getLiftEncoder()> limiter)
+    if (ladderSub.getLiftEncoder() == LadderConstants.kLiftTroughSetPoint)
       return true;
     return false;
   }

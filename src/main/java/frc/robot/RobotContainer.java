@@ -7,9 +7,9 @@ package frc.robot;
 import frc.robot.Constants.LadderConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.commands.LadderJoystickCmd;
 import frc.robot.commands.LadderMove;
+import frc.robot.commands.LadderMoveAuto;
 import frc.robot.commands.ResetLadderEncoder;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.oldLadderCommands.LadderHigh;
@@ -68,8 +68,13 @@ public class RobotContainer {
     ladderSubsystem.setDefaultCommand(new LadderJoystickCmd(ladderSubsystem, () -> driverJoystickTwo.getRawAxis(OIConstants.kDriverYAxis) ));
     
     //Creates all named commands for pathPlanner
-    NamedCommands.registerCommand("LadderL1", new LadderMove(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
-    NamedCommands.registerCommand("LadderRecieve", new LadderMove(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
+    NamedCommands.registerCommand("LadderL1", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
+    NamedCommands.registerCommand("LadderRecieve", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
+    NamedCommands.registerCommand("LadderL2", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
+    NamedCommands.registerCommand("LadderL3", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
+    NamedCommands.registerCommand("LadderL4", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
+
+
 
     // Configure the trigger bindings
     configureBindings();
