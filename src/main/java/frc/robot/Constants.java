@@ -81,7 +81,7 @@ public final class Constants {
     public static double kLiftRecieveSetPoint = 0;
 
     public static double kLadderBottom = 0;
-    public static double kLadderTop = -13.6;
+    public static double kLadderTop = -15.89;
 
     public static double kLiftSpeedUp = 0.5;
     public static double kliftSpeedDown = 0.25;
@@ -89,6 +89,11 @@ public final class Constants {
 
   }
 
+  public static class IntakeConstants {
+    public static int kIntakeMotorPort = 2;
+
+    public static double kIntakeSpeed = 0.5;
+  }
   public static class LimelightConstants{
     /*
     /Height in meters
@@ -123,8 +128,6 @@ public final class Constants {
       .17, //21
       .17, //22
     };
-
-    public static boolean useMegaTag2 = true;
   }
 
   public static class DriveConstants{
@@ -145,10 +148,12 @@ public final class Constants {
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 
             kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
+
+    public static final double kFineTurning = 10;
     
     
     public static final int kFrontLeftDriveMotorPort = 11;
@@ -203,10 +208,17 @@ public final class Constants {
     ///////////////////////buttons\\\\\\\\\\\\\\\\\
     //////////////////////////Controller One\\\\\\\\\\\\\\\\\\\\\
 
-    
+    //X
+    public static final int kFineTurningButton = 3;
+
+    //Y
+    public static final int kDriverFieldOrientedButtonIdx = 4;
+
+    //LB
+    public static final int kIntakeInButton = 5;
 
     //RB
-    public static final int kDriverFieldOrientedButtonIdx = 6;
+    public static final int kIntakeOutButton = 6;
 
     
     /////////////////////////////////Controller Two\\\\\\\\\\\\\\

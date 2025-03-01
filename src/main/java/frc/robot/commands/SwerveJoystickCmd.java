@@ -18,20 +18,21 @@ public class SwerveJoystickCmd extends Command {
   /** Creates a new SwerveJoystickCmd. */
   private final SwerveSubsystem swerveSubsystem;
   private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
-  private final Supplier<Boolean> fieldOrientedFunction;
-  private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+  private final Supplier<Boolean> fieldOrientedFunction, fineDrivingFunction;
+  private final SlewRateLimiter xLimiter, yLimiter, tLimiter;
   public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
   Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
-  Supplier<Boolean> fieldOrientedFunction) {
+  Supplier<Boolean> fieldOrientedFunction, Supplier<Boolean> fineDrivingFunction) {
     // Use addRequirements() here to declare subsystem dependencies.
      this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunction = xSpdFunction;
         this.ySpdFunction = ySpdFunction;
         this.turningSpdFunction = turningSpdFunction;
         this.fieldOrientedFunction = fieldOrientedFunction;
+        this.fineDrivingFunction = fineDrivingFunction;
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
-        this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+        this.tLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
         addRequirements(swerveSubsystem);
   }
 
@@ -53,10 +54,13 @@ public class SwerveJoystickCmd extends Command {
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
     // 3. Make the driving smoother
-    xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-    ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
-    turningSpeed = turningLimiter.calculate(turningSpeed)
-            * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+    xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+    
+    ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+    turningSpeed = tLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
+    if (fineDrivingFunction.get()) {
+      turningSpeed /= DriveConstants.kFineTurning;
+    }
 
     // 4. Construct desired chassis speeds
     ChassisSpeeds chassisSpeeds;

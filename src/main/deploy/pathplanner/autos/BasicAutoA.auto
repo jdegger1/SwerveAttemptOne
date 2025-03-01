@@ -7,13 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Path A1"
+            "pathName": "Basic PathA"
           }
         }
       ]
     }
   },
-  "resetOdom": true,
+  "resetOdom": false,
   "folder": null,
   "choreoAuto": false
 }

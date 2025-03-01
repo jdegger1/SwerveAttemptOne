@@ -16,19 +16,16 @@ import com.studica.frc.AHRS;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import com.studica.frc.AHRS;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.LimelightConstants;
@@ -93,7 +90,7 @@ public class SwerveSubsystem extends SubsystemBase {
             backRight.getPosition()
           }, odometer.getPoseMeters());
 
-    private ChassisSpeeds chassisSpeeds;
+    private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,0);
     private RobotConfig config;
 
   public SwerveSubsystem() {
@@ -108,7 +105,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
         //The following is the code to configure the pathplanner auto builder
         try{
-            config = RobotConfig.fromGUISettings();
+            config = RobotConfig.fromGUISettings(); //here it takes the setting we input in the path Planner gui
         } catch(Exception e){
             e.printStackTrace();
         }
@@ -116,15 +113,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
         AutoBuilder.configure(
             this.getPose(), //gets a supplier of pose2d
-            this.resetOdometry(getPose()), //used if the auto needs to reset the pose
+            this.resetPose(getPose()), //used if the auto needs to reset the pose
             this.getRobotRelativeSpeeds(), //uses the chassisSpeeds relative to the robot
             (speeds, feedforwards) -> driveRobotRelative(speeds), //used to command the robot chassis speeds using robot relative speeds
-            new PPHolonomicDriveController(
+            new PPHolonomicDriveController( //PID controllers for moving and rotating in autonomous.
                 new PIDConstants(AutoConstants.kAutoTranslationP, 0.0, 0.0), 
                 new PIDConstants(AutoConstants.kAutoRotationP, 0.0, 0.0)
             ),
-            config, 
-            () -> {
+            config, //uses the Robot config to configure the AutoBuilder to the robot specs
+            () -> { // I believe there is a chooser that lets us choose which alliance we're on and flips the auot if necessary.
                 var alliance = DriverStation.getAlliance();
                 if(alliance.isPresent()){
                     return alliance.get() == DriverStation.Alliance.Red;
@@ -145,12 +142,14 @@ public class SwerveSubsystem extends SubsystemBase {
         //this being negative screws with the gyro. - J
         return Math.IEEEremainder(gyro.getAngle(), 360);
     }
-    //returns as radians?
+    //returns as radians
     public Rotation2d getRotation2d() {
         return Rotation2d.fromDegrees(getHeading());
     }
+
     //returns Pose with x,y, and theta coordinates of robot
     // changed to a supplier for the sake of the autoBuilder and pathPlanner - J
+    // now uses poseEstimator because of limeLight compatability.
     public Supplier<Pose2d> getPose(){
         return () -> m_poseEstimator.getEstimatedPosition();
     }
@@ -166,7 +165,7 @@ public class SwerveSubsystem extends SubsystemBase {
         return ()-> ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation2d());
     }
     //reset the odometer current theta, module positions
-    public Consumer<Pose2d> resetOdometry(Supplier<Pose2d> poseFunction){
+    public Consumer<Pose2d> resetPose(Supplier<Pose2d> poseFunction){
         Pose2d pose = poseFunction.get();
         m_poseEstimator.resetPosition(getRotation2d(), 
         new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()},
@@ -175,6 +174,8 @@ public class SwerveSubsystem extends SubsystemBase {
         return null;
     }
 
+    /// this uses the limelight software to update the estimated position of the robot.
+    /// 
       public void updateOdometry() {
     m_poseEstimator.update(
         gyro.getRotation2d(),
@@ -187,36 +188,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
     boolean doRejectUpdate = false;
-    if(LimelightConstants.useMegaTag2 == false)
-    {
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-      
-      if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
-      {
-        if(mt1.rawFiducials[0].ambiguity > .7)
-        {
-          doRejectUpdate = true;
-        }
-        if(mt1.rawFiducials[0].distToCamera > 3)
-        {
-          doRejectUpdate = true;
-        }
-      }
-      if(mt1.tagCount == 0)
-      {
-        doRejectUpdate = true;
-      }
-
-      if(!doRejectUpdate)
-      {
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
-        m_poseEstimator.addVisionMeasurement(
-            mt1.pose,
-            mt1.timestampSeconds);
-      }
-    }
-    else if (LimelightConstants.useMegaTag2 == true)
-    {
       LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
       if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
@@ -233,7 +204,6 @@ public class SwerveSubsystem extends SubsystemBase {
         m_poseEstimator.addVisionMeasurement(
             mt2.pose,
             mt2.timestampSeconds);
-      }
     }
   }
 

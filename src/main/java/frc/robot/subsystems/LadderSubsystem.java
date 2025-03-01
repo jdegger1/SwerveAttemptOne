@@ -18,7 +18,8 @@ public class LadderSubsystem extends SubsystemBase {
   //coded as brushless can code as brushed if neccesary.
   //private final SparkMax liftMotor = new SparkMax(LadderConstants.kLiftMotorPort, MotorType.kBrushless);
   //private final RelativeEncoder liftEncoder = liftMotor.getEncoder();
-  
+  //
+  //Currently brushed, easy af to change - J
   private final SparkMax liftMotor;
   private final RelativeEncoder liftEncoder;
   private double lastSetPoint;
@@ -50,5 +51,8 @@ public class LadderSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Height", getLiftEncoder());
+    
+    SmartDashboard.putNumber("LadderVoltage", liftMotor.getBusVoltage());
+    SmartDashboard.putNumber("LadderCurrent", liftMotor.getOutputCurrent());
   }
 }

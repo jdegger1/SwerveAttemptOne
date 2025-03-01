@@ -4,36 +4,27 @@
 
 package frc.robot;
 
-import frc.robot.Constants.LadderConstants;
-import frc.robot.Constants.OIConstants;
-import frc.robot.commands.Autos;
-import frc.robot.commands.LadderJoystickCmd;
-import frc.robot.commands.LadderMove;
-import frc.robot.commands.LadderMoveAuto;
-import frc.robot.commands.ResetLadderEncoder;
-import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.commands.oldLadderCommands.LadderHigh;
-import frc.robot.commands.oldLadderCommands.LadderLow;
-import frc.robot.commands.oldLadderCommands.LadderMid;
-import frc.robot.commands.oldLadderCommands.LadderRecieve;
-import frc.robot.commands.oldLadderCommands.LadderShift;
-import frc.robot.commands.oldLadderCommands.LadderTrough;
-import frc.robot.subsystems.CameraSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
-import frc.robot.subsystems.LadderSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.Constants.LadderConstants;
+import frc.robot.Constants.OIConstants;
+import frc.robot.commands.LadderJoystickCmd;
+import frc.robot.commands.LadderMove;
+import frc.robot.commands.LadderMoveAuto;
+import frc.robot.commands.ResetLadderEncoder;
+import frc.robot.commands.SpinIntake;
+import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.subsystems.CameraSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LadderSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -42,10 +33,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
+  // The robot's subsystems and commands are defined here
+  // 
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final LadderSubsystem ladderSubsystem = new LadderSubsystem();
-  private final CameraSubsystem cameraSubsystem = new CameraSubsystem();
+  private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final SendableChooser<Command> autoChooser;
 
   private final Joystick driverJoystickOne = new Joystick(OIConstants.kDriverControllerOnePort);
@@ -55,15 +47,16 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-   autoChooser = AutoBuilder.buildAutoChooser();
-   SmartDashboard.putData("Auto Chooser",autoChooser);
+    
+   
 
     swerveSubsystem.setDefaultCommand(new SwerveJoystickCmd(
               swerveSubsystem,
               () -> -driverJoystickOne.getRawAxis(OIConstants.kDriverYAxis),
               () -> driverJoystickOne.getRawAxis(OIConstants.kDriverXAxis),
               () -> driverJoystickOne.getRawAxis(OIConstants.kDriverRotAxisXbox),
-              () -> !driverJoystickTwo.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)));
+              () -> !driverJoystickOne.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx),
+              () -> driverJoystickOne.getRawButton(OIConstants.kFineTurningButton)));
     
     ladderSubsystem.setDefaultCommand(new LadderJoystickCmd(ladderSubsystem, () -> driverJoystickTwo.getRawAxis(OIConstants.kDriverYAxis) ));
     
@@ -74,20 +67,14 @@ public class RobotContainer {
     NamedCommands.registerCommand("LadderL3", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
     NamedCommands.registerCommand("LadderL4", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
 
-
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser",autoChooser);
 
     // Configure the trigger bindings
     configureBindings();
   }
 
   private void configureBindings() {
-    /*
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftHighButton).whileTrue(new LadderHigh(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftMidButton).whileTrue(new LadderMid(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftLowButton).whileTrue(new LadderLow(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
-    new JoystickButton(driverJoystickOne, OIConstants.kliftTroughButton).whileTrue(new LadderTrough(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
-    new JoystickButton(driverJoystickOne, OIConstants.kLiftRecieveButton).whileTrue(new LadderRecieve(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
-    */
 
     //Ladder now on controller two with joystick to manually control height.
     //toggle on true to make the robot stay at a setpoint until another command is given.
@@ -102,6 +89,9 @@ public class RobotContainer {
     //these two button move the ladder without a setPoint
     //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedUpButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kLiftSpeedUp));
     //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedDownButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kliftSpeedDown));
+
+    new JoystickButton(driverJoystickOne, OIConstants.kIntakeInButton).whileTrue(new SpinIntake(intakeSubsystem, IntakeConstants.kIntakeSpeed));
+    new JoystickButton(driverJoystickOne, OIConstants.kIntakeOutButton).whileTrue(new SpinIntake(intakeSubsystem, -IntakeConstants.kIntakeSpeed));  
   }
 
   /**
@@ -111,8 +101,6 @@ public class RobotContainer {
    */
 
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-  //  return Autos.exampleAuto(m_exampleSubsystem);
-  return autoChooser.getSelected();
+    return autoChooser.getSelected();
   }
 }
