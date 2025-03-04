@@ -52,7 +52,7 @@ public class LadderSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Height", getLiftEncoder());
     
-    SmartDashboard.putNumber("LadderVoltage", liftMotor.getBusVoltage());
+    
     SmartDashboard.putNumber("LadderCurrent", liftMotor.getOutputCurrent());
   }
 }

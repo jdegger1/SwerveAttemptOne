@@ -23,6 +23,7 @@ public class LadderMoveAuto extends Command {
 
 
   private final double setPoint;
+  private boolean isAbove;
 
   public LadderMoveAuto(LadderSubsystem ladderSub, double setPoint) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -31,6 +32,9 @@ public class LadderMoveAuto extends Command {
     m_PidController.setSetpoint(this.setPoint);
 
     this.ladderSub = ladderSub;
+
+    isAbove = setPoint < ladderSub.getLiftEncoder();
+      
     
     addRequirements(ladderSub);
 
@@ -61,8 +65,11 @@ public class LadderMoveAuto extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(ladderSub.getLiftEncoder() == setPoint)
+    // checks encoder to see if it has passed the setpoint
+    if((isAbove && ladderSub.getLiftEncoder() >= setPoint)
+    || (!isAbove && ladderSub.getLiftEncoder() <= setPoint)){
       return true;
+    }
     return false;
   }
 }

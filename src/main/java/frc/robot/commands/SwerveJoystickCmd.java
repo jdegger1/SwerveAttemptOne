@@ -19,6 +19,7 @@ public class SwerveJoystickCmd extends Command {
   private final SwerveSubsystem swerveSubsystem;
   private final Supplier<Double> xSpdFunction, ySpdFunction, turningSpdFunction;
   private final Supplier<Boolean> fieldOrientedFunction, fineDrivingFunction;
+  private boolean previousFineDrivingState, fineDrivingState;
   private final SlewRateLimiter xLimiter, yLimiter, tLimiter;
   public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
   Supplier<Double> xSpdFunction, Supplier<Double> ySpdFunction, Supplier<Double> turningSpdFunction,
@@ -33,6 +34,8 @@ public class SwerveJoystickCmd extends Command {
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.tLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+        previousFineDrivingState = false;
+        fineDrivingState = false;
         addRequirements(swerveSubsystem);
   }
 
@@ -58,8 +61,17 @@ public class SwerveJoystickCmd extends Command {
     
     ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
     turningSpeed = tLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
-    if (fineDrivingFunction.get()) {
+
+    //Toggles fine Driving
+    if (fineDrivingFunction.get() &&  !previousFineDrivingState){ 
+      fineDrivingState = !fineDrivingState;
+    }
+    previousFineDrivingState = fineDrivingFunction.get();
+
+    if(fineDrivingState){
       turningSpeed /= DriveConstants.kFineTurning;
+      xSpeed /= DriveConstants.kFineDriving;
+      ySpeed /= DriveConstants.kFineDriving;
     }
 
     // 4. Construct desired chassis speeds

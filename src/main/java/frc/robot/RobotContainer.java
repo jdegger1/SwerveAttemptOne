@@ -12,16 +12,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LadderConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.ClimbCmd;
+import frc.robot.commands.ClimbHoldCmd;
 import frc.robot.commands.LadderJoystickCmd;
 import frc.robot.commands.LadderMove;
 import frc.robot.commands.LadderMoveAuto;
 import frc.robot.commands.ResetLadderEncoder;
-import frc.robot.commands.SpinIntake;
+import frc.robot.commands.SpinIntakeCmd;
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.subsystems.CameraSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LadderSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -38,14 +42,20 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final LadderSubsystem ladderSubsystem = new LadderSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+  private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
   private final SendableChooser<Command> autoChooser;
-
+  
   private final Joystick driverJoystickOne = new Joystick(OIConstants.kDriverControllerOnePort);
   private final Joystick driverJoystickTwo = new Joystick(OIConstants.kDriverControllerTwoPort);
 
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
+  /// Constructor
+  /// Sets default commands for subsystems
+  /// Creates the commands used in autonomous
+  /// Creates the chooser and builder for autonomous
+  /// Runs configure bindings method which assigns commands to buttons
   public RobotContainer() {
     
    
@@ -70,10 +80,18 @@ public class RobotContainer {
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser",autoChooser);
 
+    
     // Configure the trigger bindings
     configureBindings();
   }
 
+  /// configureBindings
+  /// Button bindings are configured by creating a new button object
+  /// Joystick buttons are assigned to a joystick and then a button on the joystick
+  /// Once assigned, the pressing of the button returns a boolean which is used to run a command
+  /// These commands can be toggled when the button is pressed, (toggleOnTrue)
+  /// Run only while the button is pressed, (whileTrue)
+  /// or a number of other options.
   private void configureBindings() {
 
     //Ladder now on controller two with joystick to manually control height.
@@ -82,16 +100,22 @@ public class RobotContainer {
     new JoystickButton(driverJoystickTwo, OIConstants.kLiftMidButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
     new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
     new JoystickButton(driverJoystickTwo, OIConstants.kliftTroughButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
-    new JoystickButton(driverJoystickTwo, OIConstants.kLiftRecieveButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
+    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftRecieveButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
 
-    new JoystickButton(driverJoystickTwo, OIConstants.kLiftResetEncoderButton).whileTrue(new ResetLadderEncoder(ladderSubsystem));
+    //Reset encoder has been wierd, I can try to fix it when I get the chance.
+    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftResetEncoderButton).whileTrue(new ResetLadderEncoder(ladderSubsystem));
 
     //these two button move the ladder without a setPoint
     //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedUpButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kLiftSpeedUp));
     //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedDownButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kliftSpeedDown));
 
-    new JoystickButton(driverJoystickOne, OIConstants.kIntakeInButton).whileTrue(new SpinIntake(intakeSubsystem, IntakeConstants.kIntakeSpeed));
-    new JoystickButton(driverJoystickOne, OIConstants.kIntakeOutButton).whileTrue(new SpinIntake(intakeSubsystem, -IntakeConstants.kIntakeSpeed));  
+    new JoystickButton(driverJoystickTwo, OIConstants.kIntakeInButton).whileTrue(new SpinIntakeCmd(intakeSubsystem, IntakeConstants.kIntakeSpeed));
+    new JoystickButton(driverJoystickTwo, OIConstants.kIntakeOutButton).whileTrue(new SpinIntakeCmd(intakeSubsystem, -IntakeConstants.kIntakeSpeed));  
+    
+
+    new JoystickButton(driverJoystickOne, OIConstants.kClimberIn).whileTrue(new ClimbCmd(climbSubsystem, ClimbConstants.kClimbSpeed));
+    new JoystickButton(driverJoystickOne, OIConstants.kClimberOut).whileTrue(new ClimbCmd(climbSubsystem, -ClimbConstants.kClimbSpeed));
+    new JoystickButton(driverJoystickOne, OIConstants.kLockClimbButton).toggleOnTrue(new ClimbHoldCmd(climbSubsystem));
   }
 
   /**

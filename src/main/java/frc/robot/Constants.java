@@ -43,9 +43,9 @@ public final class Constants {
     public static final int kLiftMotorPort = 50;
 
     //We need to test different values
-    public static double kLiftPVal = 0.05;
-    public static double kLiftIVal = 0.01;
-    public static double kLiftDVal = 0;
+    public static double kLiftPVal = 3; // 3
+    public static double kLiftIVal = 1.5; // 1.5
+    public static double kLiftDVal = 0.2; //0.2
 
     //We need to find the points on the ladder for the encoder - J
     /// L1 .46m
@@ -72,20 +72,24 @@ public final class Constants {
     public static double kL1Height = .46;
 
     //setPoints subtracting an offset from the height and converting into rotations
-    public static double kLiftHighSetPoint = (kL4Height - kL4Offset) * kRotationsPerMeter;
-    public static double kLiftMidSetPoint = (kL3Height - kMidOffset) * kRotationsPerMeter;
-    public static double kLiftLowSetPoint = (kL2Height - kMidOffset) * kRotationsPerMeter;
-    public static double kLiftTroughSetPoint = 0;
+    public static double kLiftHighSetPoint = -13.7;
+    public static double kLiftMidSetPoint = -7.35;
+    public static double kLiftLowSetPoint = 0;
+    public static double kLiftTroughSetPoint = -3.2;
 
     //recieve is assumed to be 0
     public static double kLiftRecieveSetPoint = 0;
 
     public static double kLadderBottom = 0;
-    public static double kLadderTop = -15.89;
+    public static double kLadderTop = -13.98;
 
+    //more speed going up 
     public static double kLiftSpeedUp = 0.5;
     public static double kliftSpeedDown = 0.25;
     public static double kStop = 0;
+
+    //range between encoder and setpoint on when to stop for auto
+    public static double kSetPointProximity = 0.25;
 
   }
 
@@ -93,6 +97,17 @@ public final class Constants {
     public static int kIntakeMotorPort = 2;
 
     public static double kIntakeSpeed = 0.5;
+  }
+  
+  public static class ClimbConstants {
+    public static int kClimbMotorPort = 52;
+
+    public static double kClimbSpeed = 0.5;
+
+    public static double kClimbPVal = 5;
+    public static double kClimbIVal = 5;
+    public static double kclimbDVal = 0.2;
+    
   }
   public static class LimelightConstants{
     /*
@@ -153,7 +168,8 @@ public final class Constants {
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
-    public static final double kFineTurning = 10;
+    public static final double kFineTurning = 5;
+    public static final double kFineDriving = 10;
     
     
     public static final int kFrontLeftDriveMotorPort = 11;
@@ -208,22 +224,24 @@ public final class Constants {
     ///////////////////////buttons\\\\\\\\\\\\\\\\\
     //////////////////////////Controller One\\\\\\\\\\\\\\\\\\\\\
 
-    //X
-    public static final int kFineTurningButton = 3;
-
+    //A
+    public static final int kLockClimbButton =1;
     //Y
-    public static final int kDriverFieldOrientedButtonIdx = 4;
+    public static final int kFineTurningButton = 4;
+
+    //X
+    public static final int kDriverFieldOrientedButtonIdx = 3;
 
     //LB
-    public static final int kIntakeInButton = 5;
+    public static final int kClimberOut = 5;
 
     //RB
-    public static final int kIntakeOutButton = 6;
+    public static final int kClimberIn = 6;
 
     
     /////////////////////////////////Controller Two\\\\\\\\\\\\\\
-    //x
-    public static final int kLiftLowButton = 3;
+    //A
+    public static final int kLiftLowButton = 1;
     
     //B
     public static final int kLiftMidButton = 2;
@@ -231,14 +249,26 @@ public final class Constants {
     //Y
     public static final int kLiftHighButton = 4;
 
-    //A
-    public static final int kliftTroughButton = 1;
+    //X
+    public static final int kliftTroughButton = 3;
     
     //LB
     public static final int kLiftRecieveButton = 5;
 
+    //LB
+    public static final int kIntakeInButton = 5;
+
     //RB
-    public static final int kLiftResetEncoderButton = 6;
+    public static final int kIntakeOutButton = 6;
+
+    //three lines
+    public static final int kLiftResetEncoderButton = 8;
+
+    //d-pad up
+    public static final int kIntakeInPad = 0;
+
+    //d-pad down
+    public static final int kIntakeOutPad = 180;
 
     
 
