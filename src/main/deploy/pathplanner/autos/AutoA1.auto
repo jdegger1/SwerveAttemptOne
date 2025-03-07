@@ -11,13 +11,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path A1.1"
+                  "pathName": "Path AStart-20"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "LadderL1"
+                  "name": "Score"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
                 }
               }
             ]
@@ -30,13 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path A1.2"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LadderRecieve"
+                  "pathName": "Path20-Recieve13"
                 }
               }
             ]
@@ -47,34 +54,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "RecievePath"
+                  "name": "Recieve"
                 }
               },
               {
-                "type": "named",
+                "type": "wait",
                 "data": {
-                  "name": "LadderL1"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "PathA1.4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LadderRecieve"
+                  "waitTime": 2.0
                 }
               }
             ]

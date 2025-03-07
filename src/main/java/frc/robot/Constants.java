@@ -96,7 +96,7 @@ public final class Constants {
   public static class IntakeConstants {
     public static int kIntakeMotorPort = 2;
 
-    public static double kIntakeSpeed = 0.5;
+    public static double kIntakeSpeed = 0.75;
   }
   
   public static class ClimbConstants {
@@ -166,10 +166,10 @@ public final class Constants {
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 
             kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
-    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
+    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 4;
 
-    public static final double kFineTurning = 5;
-    public static final double kFineDriving = 10;
+    public static final double kFineTurning = 3;
+    public static final double kFineDriving = 8;
     
     
     public static final int kFrontLeftDriveMotorPort = 11;

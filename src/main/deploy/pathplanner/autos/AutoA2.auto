@@ -11,13 +11,26 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "PathA2.1"
+                  "pathName": "PathAStart-19"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
               {
                 "type": "named",
                 "data": {
-                  "name": "LadderL1"
+                  "name": "Score"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
                 }
               }
             ]
@@ -30,13 +43,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "PathA1.4"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "LadderRecieve"
+                  "pathName": "Path19-Recieve13"
                 }
               }
             ]

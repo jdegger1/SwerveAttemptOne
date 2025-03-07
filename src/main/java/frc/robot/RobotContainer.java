@@ -12,19 +12,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LadderConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.BottomToTopCmdSequence;
 import frc.robot.commands.ClimbCmd;
-import frc.robot.commands.ClimbHoldCmd;
 import frc.robot.commands.LadderJoystickCmd;
 import frc.robot.commands.LadderMove;
 import frc.robot.commands.LadderMoveAuto;
-import frc.robot.commands.ResetLadderEncoder;
 import frc.robot.commands.SpinIntakeCmd;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.TopToBottomCmdSequence;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LadderSubsystem;
@@ -76,6 +75,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("LadderL2", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
     NamedCommands.registerCommand("LadderL3", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
     NamedCommands.registerCommand("LadderL4", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
+    NamedCommands.registerCommand("Score", new SpinIntakeCmd(intakeSubsystem, -IntakeConstants.kIntakeSpeed));
+    NamedCommands.registerCommand("Recieve", new SpinIntakeCmd(intakeSubsystem, IntakeConstants.kIntakeSpeed));
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser",autoChooser);
@@ -96,10 +97,19 @@ public class RobotContainer {
 
     //Ladder now on controller two with joystick to manually control height.
     //toggle on true to make the robot stay at a setpoint until another command is given.
-    new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
+    //Command Sequences used for Bottom and Top because it is too "fast" I guess, they(Bernie) want it slower when going far but faster when going short.
+    //afsfnaklvnagojlfkdlb more pid tuning needed
+    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new BottomToTopCmdSequence(ladderSubsystem)); //This is Bernie's idea. 
+
     new JoystickButton(driverJoystickTwo, OIConstants.kLiftMidButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
-    new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
+    
+    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new TopToBottomCmdSequence(ladderSubsystem));
+
     new JoystickButton(driverJoystickTwo, OIConstants.kliftTroughButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
+    
+    //recieve and bottom are same, don't need extra button, will hold on just in case
     //new JoystickButton(driverJoystickTwo, OIConstants.kLiftRecieveButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
 
     //Reset encoder has been wierd, I can try to fix it when I get the chance.
@@ -109,13 +119,13 @@ public class RobotContainer {
     //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedUpButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kLiftSpeedUp));
     //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedDownButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kliftSpeedDown));
 
+    //Spins our intake in and out, we haven't attached sensors and we're running out of time
     new JoystickButton(driverJoystickTwo, OIConstants.kIntakeInButton).whileTrue(new SpinIntakeCmd(intakeSubsystem, IntakeConstants.kIntakeSpeed));
     new JoystickButton(driverJoystickTwo, OIConstants.kIntakeOutButton).whileTrue(new SpinIntakeCmd(intakeSubsystem, -IntakeConstants.kIntakeSpeed));  
     
-
+    //Spins Climb in and out, the robot needs to be strong enough to hold itself up 
     new JoystickButton(driverJoystickOne, OIConstants.kClimberIn).whileTrue(new ClimbCmd(climbSubsystem, ClimbConstants.kClimbSpeed));
     new JoystickButton(driverJoystickOne, OIConstants.kClimberOut).whileTrue(new ClimbCmd(climbSubsystem, -ClimbConstants.kClimbSpeed));
-    new JoystickButton(driverJoystickOne, OIConstants.kLockClimbButton).toggleOnTrue(new ClimbHoldCmd(climbSubsystem));
   }
 
   /**
