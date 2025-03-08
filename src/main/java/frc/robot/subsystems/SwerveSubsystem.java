@@ -88,7 +88,7 @@ public class SwerveSubsystem extends SubsystemBase {
             frontRight.getPosition(),
             backLeft.getPosition(),
             backRight.getPosition()
-          }, odometer.getPoseMeters());
+          }, AutoBuilder.getCurrentPose()); // I changed this to see if this will help us set the starting pose based off our auto.
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,0);
     private RobotConfig config;
@@ -194,7 +194,11 @@ public class SwerveSubsystem extends SubsystemBase {
       {
         doRejectUpdate = true;
       }
-      if(mt2.tagCount == 0)
+      if( mt2 == null)
+      {
+        doRejectUpdate = true;
+      }
+      else if(mt2.tagCount == 0)
       {
         doRejectUpdate = true;
       }
