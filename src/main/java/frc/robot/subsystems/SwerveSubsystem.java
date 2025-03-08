@@ -112,9 +112,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
         AutoBuilder.configure(
-            this.getPose(), //gets a supplier of pose2d
-            this.resetPose(getPose()), //used if the auto needs to reset the pose
-            this.getRobotRelativeSpeeds(), //uses the chassisSpeeds relative to the robot
+            this::getPose, //gets a supplier of pose2d
+            this::resetPose, //used if the auto needs to reset the pose
+            this::getRobotRelativeSpeeds, //uses the chassisSpeeds relative to the robot
             (speeds, feedforwards) -> driveRobotRelative(speeds), //used to command the robot chassis speeds using robot relative speeds
             new PPHolonomicDriveController( //PID controllers for moving and rotating in autonomous.
                 new PIDConstants(AutoConstants.kAutoTranslationP, 0.0, 0.0), 
@@ -150,8 +150,8 @@ public class SwerveSubsystem extends SubsystemBase {
     //returns Pose with x,y, and theta coordinates of robot
     // changed to a supplier for the sake of the autoBuilder and pathPlanner - J
     // now uses poseEstimator because of limeLight compatability.
-    public Supplier<Pose2d> getPose(){
-        return () -> m_poseEstimator.getEstimatedPosition();
+    public Pose2d getPose(){
+        return m_poseEstimator.getEstimatedPosition();
     }
 
     //We moved the use of Chassis Speeds from our Swerve Joystick Command to our Swerve Subsytem
@@ -161,30 +161,27 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     //gets the chassis speeds relative the robot - J
-    public Supplier<ChassisSpeeds> getRobotRelativeSpeeds(){
-        return ()-> ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation2d());
+    public ChassisSpeeds getRobotRelativeSpeeds(){
+        return ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation2d());
     }
     //reset the odometer current theta, module positions
-    public Consumer<Pose2d> resetPose(Supplier<Pose2d> poseFunction){
-        Pose2d pose = poseFunction.get();
+    public void resetPose(Pose2d newPose){
         m_poseEstimator.resetPosition(getRotation2d(), 
-        new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()},
-         pose);
-        
-        return null;
+                                      new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()},
+                                      newPose);
     }
 
     /// this uses the limelight software to update the estimated position of the robot.
     /// 
       public void updateOdometry() {
-    m_poseEstimator.update(
-        gyro.getRotation2d(),
-        new SwerveModulePosition[] {
-          frontLeft.getPosition(),
-          frontRight.getPosition(),
-          backLeft.getPosition(),
-          backRight.getPosition()
-        });
+        m_poseEstimator.update(
+            gyro.getRotation2d(),
+            new SwerveModulePosition[] {
+              frontLeft.getPosition(),
+              frontRight.getPosition(),
+              backLeft.getPosition(),
+              backRight.getPosition()
+            });
 
 
     boolean doRejectUpdate = false;
@@ -220,7 +217,7 @@ public class SwerveSubsystem extends SubsystemBase {
      SmartDashboard.putString("backRight", backRight.getPosition().toString());
      SmartDashboard.putString("Robot Heading", getRotation2d().toString());
 
-     SmartDashboard.putString("Robot Location", getPose().get().getTranslation().toString());
+     SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
     
   }
 
