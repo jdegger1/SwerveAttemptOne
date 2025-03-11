@@ -288,7 +288,7 @@ public static final class AutoConstants{
   public static boolean isCompetition = false;
 
   public static double kAutoTranslationP = 5.0;
-  public static double kAutoRotationP = 2.5;
+  public static double kAutoRotationP = 2.0;
 
 }
 }

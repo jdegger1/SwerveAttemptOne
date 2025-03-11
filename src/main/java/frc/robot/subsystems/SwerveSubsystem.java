@@ -94,6 +94,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     
   public SwerveSubsystem() {
+    //used to link odometry with limelight for better pose estimation.
+    LimelightHelpers.SetIMUMode("limelight", 2);
+
     new Thread(() -> {
             try {
                 Thread.sleep(1000);
@@ -188,7 +191,6 @@ public class SwerveSubsystem extends SubsystemBase {
     boolean doRejectUpdate = false;
       LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-      
       if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
       {
         doRejectUpdate = true;

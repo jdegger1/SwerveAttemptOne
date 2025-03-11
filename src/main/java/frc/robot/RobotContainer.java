@@ -16,6 +16,7 @@ import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LadderConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.Autos;
 import frc.robot.commands.BottomToTopCmdSequence;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.LadderJoystickCmd;
@@ -148,7 +149,7 @@ public class RobotContainer {
    */
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
-    
+    //return autoChooser.getSelected();
+    return Autos.defaultAuto(swerveSubsystem, intakeSubsystem);
   }
 }

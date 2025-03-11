@@ -42,7 +42,7 @@ public class SpinIntakeJoystickCmd extends Command {
     else{
       speed = 0;
     }
-    intakeSubsystem.spinMotor(speed);
+    intakeSubsystem.spinMotor(speed/2);
   }
 
   // Called once the command ends or is interrupted.

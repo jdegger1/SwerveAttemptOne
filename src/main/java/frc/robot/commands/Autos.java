@@ -6,6 +6,9 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.IntakeConstants;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 
 public final class Autos {
   /** Example static factory for an autonomous command. */
@@ -13,6 +16,13 @@ public final class Autos {
     //return Commands.sequence(subsystem.exampleMethodCommand(), new ExampleCommand(subsystem));
   //}
 
+  public static Command defaultAuto(SwerveSubsystem swerveSubsystem, IntakeSubsystem intakeSubsystem){
+    return Commands.sequence(
+      //new ResetGyroCmd(swerveSubsystem),
+      new AutoDriveCmd(swerveSubsystem, 01, 0, 0).withTimeout(5),
+      new SpinIntakeCmd(intakeSubsystem, IntakeConstants.kIntakeSpeed).withTimeout(1)
+    );
+  }
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
