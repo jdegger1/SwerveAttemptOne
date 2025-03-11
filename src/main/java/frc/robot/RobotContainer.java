@@ -21,7 +21,9 @@ import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.LadderJoystickCmd;
 import frc.robot.commands.LadderMove;
 import frc.robot.commands.LadderMoveAuto;
+import frc.robot.commands.ResetGyroCmd;
 import frc.robot.commands.SpinIntakeCmd;
+import frc.robot.commands.SpinIntakeJoystickCmd;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.TopToBottomCmdSequence;
 import frc.robot.subsystems.ClimbSubsystem;
@@ -67,8 +69,15 @@ public class RobotContainer {
               () -> !driverJoystickOne.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx),
               () -> driverJoystickOne.getRawButton(OIConstants.kFineTurningButton)));
     
-    ladderSubsystem.setDefaultCommand(new LadderJoystickCmd(ladderSubsystem, () -> driverJoystickTwo.getRawAxis(OIConstants.kDriverYAxis) ));
+    ladderSubsystem.setDefaultCommand(new LadderJoystickCmd(
+              ladderSubsystem, 
+              () -> driverJoystickTwo.getRawAxis(OIConstants.kDriverYAxis) ));
     
+    intakeSubsystem.setDefaultCommand(new SpinIntakeJoystickCmd(
+              intakeSubsystem, 
+              () -> driverJoystickTwo.getRawAxis(OIConstants.kSpinIntakeOutAxis),
+              () -> driverJoystickTwo.getRawAxis(OIConstants.kSpinIntakeInAxis)));
+
     //Creates all named commands for pathPlanner
     NamedCommands.registerCommand("LadderL1", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
     NamedCommands.registerCommand("LadderRecieve", new LadderMoveAuto(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
@@ -124,8 +133,12 @@ public class RobotContainer {
     new JoystickButton(driverJoystickTwo, OIConstants.kIntakeOutButton).whileTrue(new SpinIntakeCmd(intakeSubsystem, -IntakeConstants.kIntakeSpeed));  
     
     //Spins Climb in and out, the robot needs to be strong enough to hold itself up 
-    new JoystickButton(driverJoystickOne, OIConstants.kClimberIn).whileTrue(new ClimbCmd(climbSubsystem, ClimbConstants.kClimbSpeed));
-    new JoystickButton(driverJoystickOne, OIConstants.kClimberOut).whileTrue(new ClimbCmd(climbSubsystem, -ClimbConstants.kClimbSpeed));
+    new JoystickButton(driverJoystickOne, OIConstants.kClimberIn).whileTrue(new ClimbCmd(climbSubsystem, ClimbConstants.kClimbInSpeed, ClimbConstants.kClimbInStop));
+    new JoystickButton(driverJoystickOne, OIConstants.kClimberOut).whileTrue(new ClimbCmd(climbSubsystem, ClimbConstants.kClimbOutSpeed, ClimbConstants.kOutStop));
+
+    
+    //simple command to zero heading of robot, hopefully it works despite potential issues.
+    new JoystickButton(driverJoystickOne, OIConstants.kResetGyroButton).whileTrue(new ResetGyroCmd(swerveSubsystem));
   }
 
   /**
@@ -136,5 +149,6 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+    
   }
 }

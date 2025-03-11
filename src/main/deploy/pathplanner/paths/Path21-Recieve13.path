@@ -3,16 +3,32 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.087049861495845,
-        "y": 4.17084487534626
+        "x": 5.875042808219178,
+        "y": 4.167744006849315
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.554287979040999,
-        "y": 3.9289861416212215
+        "x": 5.905722638460817,
+        "y": 3.9196336523367625
       },
       "isLocked": false,
-      "linkedName": "ScorePosition18"
+      "linkedName": "ScorePosition21"
+    },
+    {
+      "anchor": {
+        "x": 5.694734589041096,
+        "y": 6.406571061643835
+      },
+      "prevControl": {
+        "x": 6.211680203086943,
+        "y": 5.563121909249516
+      },
+      "nextControl": {
+        "x": 5.0979652266104525,
+        "y": 7.380260748219613
+      },
+      "isLocked": false,
+      "linkedName": null
     },
     {
       "anchor": {
@@ -20,8 +36,8 @@
         "y": 6.947495719178082
       },
       "prevControl": {
-        "x": 0.9172058874502015,
-        "y": 7.104320257544097
+        "x": 0.8683707972882625,
+        "y": 6.890987367366437
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +64,7 @@
   "folder": "Coral-Recieve13",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

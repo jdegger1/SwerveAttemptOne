@@ -2,8 +2,17 @@
   "robotWidth": 0.6925,
   "robotLength": 0.9779,
   "holonomicMode": true,
-  "pathFolders": [],
-  "autoFolders": [],
+  "pathFolders": [
+    "AStart",
+    "BasicPath",
+    "Coral-Recieve13",
+    "BStart",
+    "Recieve13-Coral"
+  ],
+  "autoFolders": [
+    "AAutos",
+    "BAutos"
+  ],
   "defaultMaxVel": 4.47,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

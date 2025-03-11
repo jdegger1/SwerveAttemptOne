@@ -73,7 +73,7 @@ public final class Constants {
 
     //setPoints subtracting an offset from the height and converting into rotations
     public static double kLiftHighSetPoint = -13.7;
-    public static double kLiftMidSetPoint = -7.35;
+    public static double kLiftMidSetPoint = -8.35;
     public static double kLiftLowSetPoint = 0;
     public static double kLiftTroughSetPoint = -3.2;
 
@@ -96,13 +96,17 @@ public final class Constants {
   public static class IntakeConstants {
     public static int kIntakeMotorPort = 2;
 
-    public static double kIntakeSpeed = 0.75;
+    public static double kIntakeSpeed = 1;
   }
   
   public static class ClimbConstants {
     public static int kClimbMotorPort = 52;
 
-    public static double kClimbSpeed = 0.5;
+    public static double kClimbOutSpeed = 0.5;
+    public static double kClimbInSpeed = -0.5;
+
+    public static double kClimbInStop = 0;
+    public static double kOutStop = 0;
 
     public static double kClimbPVal = 5;
     public static double kClimbIVal = 5;
@@ -165,8 +169,8 @@ public final class Constants {
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 
             kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
-    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 4;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 5;
+    public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5;
 
     public static final double kFineTurning = 3;
     public static final double kFineDriving = 8;
@@ -219,13 +223,15 @@ public final class Constants {
     public static final int kDriverXAxis = 0;
     public static final int kDriverRotAxisXbox = 4;
     public static final int kDriverRotAxisJoystick = 2;
+    public static final int kSpinIntakeInAxis = 2;
+    public static final int kSpinIntakeOutAxis = 3;
 
 
     ///////////////////////buttons\\\\\\\\\\\\\\\\\
     //////////////////////////Controller One\\\\\\\\\\\\\\\\\\\\\
 
     //A
-    public static final int kLockClimbButton =1;
+    public static final int kResetGyroButton =1;
     //Y
     public static final int kFineTurningButton = 4;
 
@@ -256,10 +262,10 @@ public final class Constants {
     public static final int kLiftRecieveButton = 5;
 
     //LB
-    public static final int kIntakeInButton = 5;
+    public static final int kIntakeInButton = 6;
 
     //RB
-    public static final int kIntakeOutButton = 6;
+    public static final int kIntakeOutButton = 5;
 
     //three lines
     public static final int kLiftResetEncoderButton = 8;
@@ -282,7 +288,7 @@ public static final class AutoConstants{
   public static boolean isCompetition = false;
 
   public static double kAutoTranslationP = 5.0;
-  public static double kAutoRotationP = 5.0;
+  public static double kAutoRotationP = 2.5;
 
 }
 }

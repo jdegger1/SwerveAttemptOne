@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.087049861495845,
-        "y": 4.17084487534626
+        "x": 7.602996575342465,
+        "y": 6.121083047945206
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.554287979040999,
-        "y": 3.9289861416212215
+        "x": 6.444897912672745,
+        "y": 6.123446170853371
       },
       "isLocked": false,
-      "linkedName": "ScorePosition18"
+      "linkedName": "StartPositionB"
     },
     {
       "anchor": {
-        "x": 1.111900684931507,
-        "y": 6.947495719178082
+        "x": 5.003553082191781,
+        "y": 5.249593321917807
       },
       "prevControl": {
-        "x": 0.9172058874502015,
-        "y": 7.104320257544097
+        "x": 6.0922881464419785,
+        "y": 5.806968084704013
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "RecievePosition13"
+      "linkedName": "ScorePosition20"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -55.0
+    "rotation": -119.99999999999999
   },
   "reversed": false,
-  "folder": "Coral-Recieve13",
+  "folder": "BStart",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

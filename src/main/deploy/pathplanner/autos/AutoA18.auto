@@ -5,16 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "PathAStart-19"
-                }
-              }
-            ]
+            "pathName": "PathAStart-18"
           }
         },
         {
@@ -37,22 +30,15 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Path19-Recieve13"
-                }
-              }
-            ]
+            "pathName": "Path18-Recieve13"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": null,
+  "folder": "AAutos",
   "choreoAuto": false
 }

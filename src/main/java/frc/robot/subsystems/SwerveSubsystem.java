@@ -75,7 +75,7 @@ public class SwerveSubsystem extends SubsystemBase {
     
     // private ADXRS450_Gyro gyro = new ADXRS450_Gyro();
 
-    //throughout, poseEstimator is used for odometry but the odometer is used to get the initial pose I guess, if not I have to use vectors and that confuses me.
+    //throughout, poseEstimator is used for odometry but the odometer is used to get the initial pose I guess
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics,new Rotation2d(0),
         new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()});
 
@@ -88,11 +88,11 @@ public class SwerveSubsystem extends SubsystemBase {
             frontRight.getPosition(),
             backLeft.getPosition(),
             backRight.getPosition()
-          }, AutoBuilder.getCurrentPose()); // I changed this to see if this will help us set the starting pose based off our auto.
-
+          }, odometer.getPoseMeters());
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,0);
     private RobotConfig config;
 
+    
   public SwerveSubsystem() {
     new Thread(() -> {
             try {
@@ -112,9 +112,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
         AutoBuilder.configure(
-            this.getPose(), //gets a supplier of pose2d
-            this.resetPose(getPose()), //used if the auto needs to reset the pose
-            this.getRobotRelativeSpeeds(), //uses the chassisSpeeds relative to the robot
+            this::getPose, //gets a supplier of pose2d
+            this::resetPose, //used if the auto needs to reset the pose if reset odometry is checked
+            this::getRobotRelativeSpeeds, //uses the chassisSpeeds relative to the robot
             (speeds, feedforwards) -> driveRobotRelative(speeds), //used to command the robot chassis speeds using robot relative speeds
             new PPHolonomicDriveController( //PID controllers for moving and rotating in autonomous.
                 new PIDConstants(AutoConstants.kAutoTranslationP, 0.0, 0.0), 
@@ -148,10 +148,9 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     //returns Pose with x,y, and theta coordinates of robot
-    // changed to a supplier for the sake of the autoBuilder and pathPlanner - J
     // now uses poseEstimator because of limeLight compatability.
-    public Supplier<Pose2d> getPose(){
-        return () -> m_poseEstimator.getEstimatedPosition();
+    public Pose2d getPose(){
+        return m_poseEstimator.getEstimatedPosition();
     }
 
     //We moved the use of Chassis Speeds from our Swerve Joystick Command to our Swerve Subsytem
@@ -161,17 +160,16 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     //gets the chassis speeds relative the robot - J
-    public Supplier<ChassisSpeeds> getRobotRelativeSpeeds(){
-        return ()-> ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation2d());
+    public ChassisSpeeds getRobotRelativeSpeeds(){
+        return ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation2d());
     }
     //reset the odometer current theta, module positions
-    public Consumer<Pose2d> resetPose(Supplier<Pose2d> poseFunction){
-        Pose2d pose = poseFunction.get();
+    public void resetPose(Pose2d newPose){
+        Pose2d pose = newPose;
         m_poseEstimator.resetPosition(getRotation2d(), 
         new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()},
          pose);
         
-        return null;
     }
 
     /// this uses the limelight software to update the estimated position of the robot.
@@ -190,6 +188,7 @@ public class SwerveSubsystem extends SubsystemBase {
     boolean doRejectUpdate = false;
       LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+      
       if(Math.abs(gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
       {
         doRejectUpdate = true;
@@ -218,13 +217,14 @@ public class SwerveSubsystem extends SubsystemBase {
      //updates odometer based on new positions which take into account turn encoder and drive encoder along with position on robot
      //m_poseEstimator.update(getRotation2d(),new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()} );
      updateOdometry();
+     
      SmartDashboard.putString("frontLeft", frontLeft.getPosition().toString());
      SmartDashboard.putString("frontRight", frontRight.getPosition().toString());
      SmartDashboard.putString("backLeft", backLeft.getPosition().toString());
      SmartDashboard.putString("backRight", backRight.getPosition().toString());
      SmartDashboard.putString("Robot Heading", getRotation2d().toString());
 
-     SmartDashboard.putString("Robot Location", getPose().get().getTranslation().toString());
+     SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
     
   }
 

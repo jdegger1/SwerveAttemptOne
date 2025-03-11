@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
@@ -46,21 +48,21 @@ public class SwerveJoystickCmd extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    
     // 1. Get real-time joystick inputs
     double xSpeed = xSpdFunction.get();
     double ySpeed = ySpdFunction.get();
     double turningSpeed = turningSpdFunction.get();
+/* 
+// potential solution to an unknown problem, probably won't be needed.
+    if(DriverStation.getAlliance().equals(Alliance.Blue)){
+      xSpeed = -xSpeed;
+      ySpeed = -ySpeed;
+      turningSpeed = -turningSpeed;
+    }
+     */
 
-    // 2. Apply deadband
-    xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
-    ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
-    turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
-
-    // 3. Make the driving smoother
-    xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
     
-    ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
-    turningSpeed = tLimiter.calculate(turningSpeed * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond);
 
     //Toggles fine Driving
     if (fineDrivingFunction.get() &&  !previousFineDrivingState){ 
@@ -73,6 +75,19 @@ public class SwerveJoystickCmd extends Command {
       xSpeed /= DriveConstants.kFineDriving;
       ySpeed /= DriveConstants.kFineDriving;
     }
+    
+    // 2. Make the driving smoother
+    xSpeed = xLimiter.calculate(xSpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+    
+    ySpeed = yLimiter.calculate(ySpeed * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+    turningSpeed = tLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+
+    // 3. Apply deadband
+    // By applying deadband after limiter, we allow a smooth acceleration but immediate stop. This code was payed in blood.
+    xSpeed = Math.abs(xSpdFunction.get()) > OIConstants.kDeadband ? xSpeed : 0.0;
+    ySpeed = Math.abs(ySpdFunction.get()) > OIConstants.kDeadband ? ySpeed : 0.0;
+    turningSpeed = Math.abs(turningSpdFunction.get()) > OIConstants.kDeadband ? turningSpeed : 0.0;
+    
 
     // 4. Construct desired chassis speeds
     ChassisSpeeds chassisSpeeds;

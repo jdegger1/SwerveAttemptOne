@@ -5,49 +5,32 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ClimbCmd extends Command {
-  /** Creates a new ClimbCmd. */
-  private ClimbSubsystem climbSubsystem;
-  private double speed;
-  private double setPoint;
-  private boolean isAbove;
-  public ClimbCmd(ClimbSubsystem climbSubsystem, double speed , double setPoint) {
+public class ResetGyroCmd extends Command {
+  /** Creates a new ResetGyroCmd. */
+  private SwerveSubsystem swerveSubsystem;
+  public ResetGyroCmd(SwerveSubsystem swerveSubsystem) {
+    this.swerveSubsystem = swerveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    this.climbSubsystem = climbSubsystem;
-    this.speed = speed;
-    isAbove = setPoint < climbSubsystem.getClimbEncoder();
-
-    addRequirements(climbSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {swerveSubsystem.zeroHeading();}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    climbSubsystem.setSpeed(speed);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    climbSubsystem.setSpeed(0);
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    /*
-    if((isAbove && climbSubsystem.getClimbEncoder() <= setPoint)
-    || (!isAbove && climbSubsystem.getClimbEncoder() >= setPoint)){
-      return true;
-    }
-     */
     return false;
   }
 }
