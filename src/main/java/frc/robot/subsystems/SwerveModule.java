@@ -74,7 +74,7 @@ public class SwerveModule extends SubsystemBase {
 
       config
         .inverted(turningMotorReversed)
-        .idleMode(IdleMode.kBrake);
+        .idleMode(IdleMode.kCoast);
       config.encoder
         .positionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad)
         .velocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);

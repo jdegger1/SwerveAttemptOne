@@ -4,40 +4,42 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import com.pathplanner.lib.path.PathConstraints;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.LimelightHelpers;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.SwerveSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class AutoDriveCmd extends Command {
-  /** Creates a new AutoDriveCmd. */
-  private SwerveSubsystem swerveSubsystem;
-  private double xSpeed, ySpeed, thetaSpeed;
-  private ChassisSpeeds chassisSpeeds;
-  public AutoDriveCmd(SwerveSubsystem swerveSubsystem, double x, double y, double theta) {
+public class AutoDriveTowardAprilTagCmd extends Command {
+  /** Creates a new AutoDriveTowardAprilTag. */
+  SwerveSubsystem swerveSubsystem;
+  Pose2d targetPose;
+  PathConstraints constraints;
+  public AutoDriveTowardAprilTagCmd(SwerveSubsystem swerveSubsystem) {
     this.swerveSubsystem = swerveSubsystem;
-    chassisSpeeds = new ChassisSpeeds(x, y, theta);
-    addRequirements(swerveSubsystem);
+    targetPose = LimelightHelpers.getTargetPose3d_RobotSpace("limelight").toPose2d();
+    constraints = new PathConstraints(DriveConstants.kPhysicalMaxSpeedMetersPerSecond, 
+    DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond,
+     DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond, 
+     DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(swerveSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    swerveSubsystem.setChassisSpeed(chassisSpeeds);
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-    swerveSubsystem.setModuleStates();
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-    swerveSubsystem.driveRobotRelative(new ChassisSpeeds(0, 0, 0));
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override

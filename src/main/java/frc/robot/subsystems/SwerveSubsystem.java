@@ -4,15 +4,22 @@
 
 package frc.robot.subsystems;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import org.json.simple.parser.ParseException;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 import com.studica.frc.AHRS;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -22,8 +29,10 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.AutoConstants;
@@ -95,6 +104,8 @@ public class SwerveSubsystem extends SubsystemBase {
     
   public SwerveSubsystem() {
     //used to link odometry with limelight for better pose estimation.
+   
+    //CameraServer.addCamera(null);
     LimelightHelpers.SetIMUMode("limelight", 2);
 
     new Thread(() -> {
@@ -145,7 +156,11 @@ public class SwerveSubsystem extends SubsystemBase {
         //this being negative screws with the gyro. - J
         return Math.IEEEremainder(gyro.getAngle(), 360);
     }
-    //returns as radians
+
+    public double getHeadingRadians(){
+      return Units.degreesToRadians(getHeading());
+    }
+    //returns as rotation2d object (in radians)
     public Rotation2d getRotation2d() {
         return Rotation2d.fromDegrees(getHeading());
     }
@@ -165,6 +180,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //gets the chassis speeds relative the robot - J
     public ChassisSpeeds getRobotRelativeSpeeds(){
         return ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, getRotation2d());
+        //return ChassisSpeeds.fromFieldRelativeSpeeds(chassisSpeeds, Rotation2d.fromDegrees(-getHeading()));
     }
     //reset the odometer current theta, module positions
     public void resetPose(Pose2d newPose){
@@ -212,21 +228,32 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
+  public Command driveTowardAprilTag(){
+    Pose2d targetPose = LimelightHelpers.getTargetPose3d_RobotSpace("limelight").toPose2d();
+    PathConstraints constraints = new PathConstraints(DriveConstants.kPhysicalMaxSpeedMetersPerSecond, 
+    DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond,
+     DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond, 
+     DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+
+     return AutoBuilder.pathfindToPose(targetPose, constraints, 0.0);
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
      //updates odometer based on new positions which take into account turn encoder and drive encoder along with position on robot
      //m_poseEstimator.update(getRotation2d(),new SwerveModulePosition[]{frontLeft.getPosition(),frontRight.getPosition(),backLeft.getPosition(),backRight.getPosition()} );
      updateOdometry();
      
-     SmartDashboard.putString("frontLeft", frontLeft.getPosition().toString());
-     SmartDashboard.putString("frontRight", frontRight.getPosition().toString());
-     SmartDashboard.putString("backLeft", backLeft.getPosition().toString());
-     SmartDashboard.putString("backRight", backRight.getPosition().toString());
+     //SmartDashboard.putString("frontLeft", frontLeft.getPosition().toString());
+     //SmartDashboard.putString("frontRight", frontRight.getPosition().toString());
+     //SmartDashboard.putString("backLeft", backLeft.getPosition().toString());
+     //SmartDashboard.putString("backRight", backRight.getPosition().toString());
      SmartDashboard.putString("Robot Heading", getRotation2d().toString());
 
      SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
+     SmartDashboard.putNumber("Robot heading", getHeadingRadians());
+
+     
     
   }
 

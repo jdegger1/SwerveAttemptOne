@@ -33,8 +33,9 @@ public final class Constants {
     
     public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter/60;
     public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad/60;
+
+
     //wtf this do
-    
     //its our p term for the pid for turning - J
     public static final double kPTurning = 0.3;
     
@@ -42,10 +43,11 @@ public final class Constants {
   public static class LadderConstants {
     public static final int kLiftMotorPort = 50;
 
+
     //We need to test different values
-    public static double kLiftPVal = 3; // 3
-    public static double kLiftIVal = 1.5; // 1.5
-    public static double kLiftDVal = 0.2; //0.2
+    public static double kLiftPVal = 1.0; // 3
+    public static double kLiftIVal = 0.02; // 1.5
+    public static double kLiftDVal = 0.0; //0.2
 
     //We need to find the points on the ladder for the encoder - J
     /// L1 .46m
@@ -72,20 +74,20 @@ public final class Constants {
     public static double kL1Height = .46;
 
     //setPoints subtracting an offset from the height and converting into rotations
-    public static double kLiftHighSetPoint = -13.7;
-    public static double kLiftMidSetPoint = -8.35;
-    public static double kLiftLowSetPoint = 0;
-    public static double kLiftTroughSetPoint = -3.2;
+    public static double kLiftHighSetPoint = 14.2; //Y
+    public static double kLiftMidSetPoint = 7.954; //B
+    public static double kLiftLowSetPoint = 0; //A
+    public static double kLiftTroughSetPoint = 2.691; //X
 
     //recieve is assumed to be 0
     public static double kLiftRecieveSetPoint = 0;
-
+//limits
     public static double kLadderBottom = 0;
-    public static double kLadderTop = -13.98;
+    public static double kLadderTop = 14.2;
 
     //more speed going up 
     public static double kLiftSpeedUp = 0.5;
-    public static double kliftSpeedDown = 0.25;
+    public static double kliftSpeedDown = 0.5;
     public static double kStop = 0;
 
     //range between encoder and setpoint on when to stop for auto
@@ -95,6 +97,8 @@ public final class Constants {
 
   public static class IntakeConstants {
     public static int kIntakeMotorPort = 2;
+
+    public static int proxSensorPort = 0;
 
     public static double kIntakeSpeed = 1;
   }
@@ -163,13 +167,13 @@ public final class Constants {
 
 
 
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 4.47;
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 3;
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = 
             kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
-    public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 5;
+    public static final double kTeleDriveMaxAccelerationUnitsPerSecond = kPhysicalMaxSpeedMetersPerSecond;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 5;
 
     public static final double kFineTurning = 3;
@@ -257,14 +261,11 @@ public final class Constants {
 
     //X
     public static final int kliftTroughButton = 3;
-    
-    //LB
-    public static final int kLiftRecieveButton = 5;
-
-    //LB
-    public static final int kIntakeInButton = 6;
 
     //RB
+    public static final int kIntakeInButton = 6;
+
+    //LB
     public static final int kIntakeOutButton = 5;
 
     //three lines
@@ -290,6 +291,14 @@ public static final class AutoConstants{
   public static double kAutoTranslationP = 5.0;
   public static double kAutoRotationP = 2.0;
 
+  // private distance to calculate speed.
+  public static double kMidDriveForwardDistance = Units.inchesToMeters(75);
+  public static double kMidDriveForwardTime = 5.0;
+  public static double kMidDriveForwardSpeed = kMidDriveForwardDistance / kMidDriveForwardTime;
+
+  public static double kLeftDriveForwardDistance = Units.inchesToMeters(61.0);
+  public static double kLeftDriveForwardTime = 5.0;
+  public static double kLeftDriveForwardSpeed = kLeftDriveForwardDistance / kLeftDriveForwardTime;
 }
 }
 //https://software-metadata.revrobotics.com/REVLib-2025.json

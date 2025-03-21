@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LimelightHelpers;
 
 public class CameraSubsystem extends SubsystemBase {
   /** Creates a new CameraSubsystem. */
@@ -16,7 +17,11 @@ public class CameraSubsystem extends SubsystemBase {
   NetworkTableEntry tx, ty, ta, tid;
   double x, y, area;
   int id;
+  String llName = "limelight";
   public CameraSubsystem() {
+    x = LimelightHelpers.getTX(llName);
+    y = LimelightHelpers.getTY(llName);
+    area = LimelightHelpers.getTA(llName);
     table = NetworkTableInstance.getDefault().getTable("limelight");
     tx = table.getEntry("tx");
     ty = table.getEntry("ty");
@@ -52,14 +57,6 @@ public class CameraSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    x = getX();
-    y = getY();
-    area = getArea();
-    id = getID();
-
-    SmartDashboard.putNumber("LimelightX", x);
-    SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightArea", area);
-    SmartDashboard.putNumber("AprilTagID", id);
+    
   }
 }

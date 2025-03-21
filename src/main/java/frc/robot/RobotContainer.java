@@ -6,7 +6,12 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathfindingCommand;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.CvSink;
+import edu.wpi.first.cscore.CvSource;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,6 +24,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.BottomToTopCmdSequence;
 import frc.robot.commands.ClimbCmd;
+import frc.robot.commands.CoralSenseIntakeCmd;
 import frc.robot.commands.LadderJoystickCmd;
 import frc.robot.commands.LadderMove;
 import frc.robot.commands.LadderMoveAuto;
@@ -45,12 +51,19 @@ public class RobotContainer {
   private final LadderSubsystem ladderSubsystem = new LadderSubsystem();
   private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
   private final ClimbSubsystem climbSubsystem = new ClimbSubsystem();
-  private final SendableChooser<Command> autoChooser;
+  //private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> autosChooser;
+  private final Command testAuto;
+  private final Command midAuto;
+  private final Command taxiAuto;
   
   private final Joystick driverJoystickOne = new Joystick(OIConstants.kDriverControllerOnePort);
   private final Joystick driverJoystickTwo = new Joystick(OIConstants.kDriverControllerTwoPort);
-
-
+/* 
+  private final UsbCamera usbCamera;
+  private final CvSink cvSink;
+  private final CvSource outputStream;
+*/
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   /// Constructor
@@ -72,7 +85,8 @@ public class RobotContainer {
     
     ladderSubsystem.setDefaultCommand(new LadderJoystickCmd(
               ladderSubsystem, 
-              () -> driverJoystickTwo.getRawAxis(OIConstants.kDriverYAxis) ));
+              () -> driverJoystickTwo.getRawAxis(OIConstants.kDriverYAxis),
+              () -> driverJoystickTwo.getRawButtonPressed(OIConstants.kLiftResetEncoderButton)));
     
     intakeSubsystem.setDefaultCommand(new SpinIntakeJoystickCmd(
               intakeSubsystem, 
@@ -88,10 +102,35 @@ public class RobotContainer {
     NamedCommands.registerCommand("Score", new SpinIntakeCmd(intakeSubsystem, -IntakeConstants.kIntakeSpeed));
     NamedCommands.registerCommand("Recieve", new SpinIntakeCmd(intakeSubsystem, IntakeConstants.kIntakeSpeed));
 
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser",autoChooser);
+    //autoChooser = AutoBuilder.buildAutoChooser();
+
+    autosChooser = new SendableChooser<>();
+    testAuto = Autos.testAuto(swerveSubsystem, intakeSubsystem);
+    midAuto = Autos.middleAuto(swerveSubsystem, intakeSubsystem);
+    taxiAuto = Autos.taxiAuto(swerveSubsystem);
+
+    autosChooser.setDefaultOption("Middle Auto", midAuto);
+    autosChooser.addOption("taxiAuto", taxiAuto);
+
+    //SmartDashboard.putData("Auto Chooser",autoChooser);
+
+    SmartDashboard.putData("Autos Chooser", autosChooser);
 
     
+    /* 
+    usbCamera = CameraServer.startAutomaticCapture();
+    usbCamera.setResolution(640, 480);
+    usbCamera.setFPS(10);
+
+    cvSink = CameraServer.getVideo();
+    outputStream = CameraServer.putVideo("Rectangle", 640, 480);
+    */
+
+
+    
+   
+    PathfindingCommand.warmupCommand().schedule();
+
     // Configure the trigger bindings
     configureBindings();
   }
@@ -109,13 +148,13 @@ public class RobotContainer {
     //toggle on true to make the robot stay at a setpoint until another command is given.
     //Command Sequences used for Bottom and Top because it is too "fast" I guess, they(Bernie) want it slower when going far but faster when going short.
     //afsfnaklvnagojlfkdlb more pid tuning needed
-    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
-    new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new BottomToTopCmdSequence(ladderSubsystem)); //This is Bernie's idea. 
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftHighSetPoint));
+    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftHighButton).toggleOnTrue(new BottomToTopCmdSequence(ladderSubsystem)); //This is Bernie's idea. 
 
     new JoystickButton(driverJoystickTwo, OIConstants.kLiftMidButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftMidSetPoint));
     
-    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
-    new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new TopToBottomCmdSequence(ladderSubsystem));
+    new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftLowSetPoint));
+    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftLowButton).toggleOnTrue(new TopToBottomCmdSequence(ladderSubsystem));
 
     new JoystickButton(driverJoystickTwo, OIConstants.kliftTroughButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftTroughSetPoint));
     
@@ -123,7 +162,7 @@ public class RobotContainer {
     //new JoystickButton(driverJoystickTwo, OIConstants.kLiftRecieveButton).toggleOnTrue(new LadderMove(ladderSubsystem, LadderConstants.kLiftRecieveSetPoint));
 
     //Reset encoder has been wierd, I can try to fix it when I get the chance.
-    //new JoystickButton(driverJoystickTwo, OIConstants.kLiftResetEncoderButton).whileTrue(new ResetLadderEncoder(ladderSubsystem));
+    //-new JoystickButton(driverJoystickTwo, OIConstants.kLiftResetEncoderButton).whileTrue(new ResetLadderEncoder(ladderSubsystem));
 
     //these two button move the ladder without a setPoint
     //new JoystickButton(driverJoystickTwo, OIConstants.kliftSpeedUpButton).whileTrue(new LadderShift(ladderSubsystem, LadderConstants.kLiftSpeedUp));
@@ -131,7 +170,7 @@ public class RobotContainer {
 
     //Spins our intake in and out, we haven't attached sensors and we're running out of time
     new JoystickButton(driverJoystickTwo, OIConstants.kIntakeInButton).whileTrue(new SpinIntakeCmd(intakeSubsystem, IntakeConstants.kIntakeSpeed));
-    new JoystickButton(driverJoystickTwo, OIConstants.kIntakeOutButton).whileTrue(new SpinIntakeCmd(intakeSubsystem, -IntakeConstants.kIntakeSpeed));  
+    new JoystickButton(driverJoystickTwo, OIConstants.kIntakeOutButton).whileTrue(new CoralSenseIntakeCmd(intakeSubsystem));  
     
     //Spins Climb in and out, the robot needs to be strong enough to hold itself up 
     new JoystickButton(driverJoystickOne, OIConstants.kClimberIn).whileTrue(new ClimbCmd(climbSubsystem, ClimbConstants.kClimbInSpeed, ClimbConstants.kClimbInStop));
@@ -149,7 +188,12 @@ public class RobotContainer {
    */
 
   public Command getAutonomousCommand() {
+    // Pathplanner
     //return autoChooser.getSelected();
-    return Autos.defaultAuto(swerveSubsystem, intakeSubsystem);
+    
+    // Autos
+    return autosChooser.getSelected();
+
+    //return Autos.middleAuto(swerveSubsystem, intakeSubsystem);
   }
 }

@@ -17,13 +17,17 @@ public class LadderMove extends Command {
 
   private final double setPoint;
 
+  //private final Supplier<Boolean> changeOffsetfx;
+
   public LadderMove(LadderSubsystem ladderSub, double setPoint) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.ladderSub = ladderSub;
     this.setPoint = setPoint;
     this.m_PidController = new PIDController(LadderConstants.kLiftPVal, LadderConstants.kLiftIVal, LadderConstants.kLiftDVal);
-    m_PidController.setSetpoint(this.setPoint);
+   // m_PidController.setSetpoint(this.setPoint + LadderSubsystem.getOffset());
 
-    this.ladderSub = ladderSub;
+
+    
     
     addRequirements(ladderSub);
 
@@ -31,17 +35,23 @@ public class LadderMove extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    m_PidController.setSetpoint(this.setPoint + LadderSubsystem.getOffset());
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    ladderSub.setLastPoint(setPoint);
+
+    //ladderSub.setLastPoint(setPoint+ LadderSubsystem.getOffset());
+
     double speed = m_PidController.calculate(ladderSub.getLiftEncoder());
 
     ladderSub.driveLift(speed);
     SmartDashboard.putNumber("speed", speed);
     SmartDashboard.putNumber("Setpoint", setPoint);
+    
+    SmartDashboard.putNumber("Setpoint offset", LadderSubsystem.getOffset());
     SmartDashboard.putNumber("Error", m_PidController.getError());
   }
 

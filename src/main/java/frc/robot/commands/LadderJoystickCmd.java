@@ -17,10 +17,12 @@ public class LadderJoystickCmd extends Command {
 
   private final LadderSubsystem ladderSubsystem;
   private final Supplier<Double> speedFunction;
-  public LadderJoystickCmd(LadderSubsystem ladderSubsystem, Supplier<Double> spdFunction) {
+  private final Supplier<Boolean> offsetResetSupplier;
+  public LadderJoystickCmd(LadderSubsystem ladderSubsystem, Supplier<Double> spdFunction, Supplier<Boolean> offsetReset) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.ladderSubsystem = ladderSubsystem;
     speedFunction = spdFunction;
+    offsetResetSupplier = offsetReset;
     addRequirements(ladderSubsystem);
   }
 
@@ -32,6 +34,9 @@ public class LadderJoystickCmd extends Command {
   @Override
   public void execute() {
     //1. get real time joystick input
+    if(offsetResetSupplier.get()){
+      ladderSubsystem.setOffset(ladderSubsystem.getLiftEncoder());
+    }
     double speed = speedFunction.get();
 
     //2. apply deadband
@@ -45,7 +50,7 @@ public class LadderJoystickCmd extends Command {
 
     //4. Output speed to motor
 
-    ladderSubsystem.driveLift(speed);
+    ladderSubsystem.driveLift(-speed);
 
   }
 
